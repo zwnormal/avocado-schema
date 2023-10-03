@@ -14,15 +14,15 @@ use serde::{Deserialize, Serialize};
 pub struct FloatField {
     pub name: String,
     pub title: String,
-    #[serde(flatten)]
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub enumeration: Option<Enumeration>,
-    #[serde(flatten)]
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub maximum: Option<Maximum>,
-    #[serde(flatten)]
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub exclusive_maximum: Option<ExclusiveMaximum>,
-    #[serde(flatten)]
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub minimum: Option<Minimum>,
-    #[serde(flatten)]
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub exclusive_minimum: Option<ExclusiveMinimum>,
 }
 

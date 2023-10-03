@@ -13,6 +13,7 @@ pub struct ObjectField {
     pub name: String,
     pub title: String,
     pub properties: HashMap<String, Arc<FieldEnum>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub required: Option<Required>,
 }
 
@@ -90,7 +91,35 @@ impl ObjectFieldBuilder {
 
 #[cfg(test)]
 mod tests {
-    use crate::core::object::ObjectField;
+    use crate::core::object::{ObjectField, ObjectFieldBuilder};
+    use crate::core::string::StringFieldBuilder;
+
+    #[test]
+    fn test_serialize() {
+        let field = ObjectFieldBuilder::new()
+            .name("client")
+            .title("Client")
+            .property(
+                "first_name",
+                StringFieldBuilder::new()
+                    .name("first_name")
+                    .title("First Name")
+                    .max_length(32)
+                    .min_length(8)
+                    .build(),
+            )
+            .property(
+                "last_name",
+                StringFieldBuilder::new()
+                    .name("last_name")
+                    .title("Last Name")
+                    .max_length(32)
+                    .min_length(8)
+                    .build(),
+            )
+            .build();
+        serde_json::to_string(&field).unwrap();
+    }
 
     #[test]
     fn test_deserialize() {

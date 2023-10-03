@@ -14,12 +14,13 @@ use serde::{Deserialize, Serialize};
 pub struct StringField {
     pub name: String,
     pub title: String,
-    #[serde(flatten)]
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub enumeration: Option<Enumeration>,
-    #[serde(rename = "maxLength")]
+    #[serde(rename = "maxLength", skip_serializing_if = "Option::is_none")]
     pub max_length: Option<MaxLength>,
-    #[serde(rename = "minLength")]
+    #[serde(rename = "minLength", skip_serializing_if = "Option::is_none")]
     pub min_length: Option<MinLength>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub pattern: Option<Pattern>,
 }
 
