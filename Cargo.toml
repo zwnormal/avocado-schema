@@ -8,7 +8,6 @@ homepage = "https://github.com/zwnormal/avocado-schema/"
 repository = "https://github.com/zwnormal/avocado-schema/"
 readme = "README.md"
 keywords = ["schema"]
-categories = ["development-tools::schema"]
 
 [dependencies]
 uuid = { version = "1.4", features = ["v4", "fast-rng", "macro-diagnostics"]}
