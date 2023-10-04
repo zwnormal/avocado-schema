@@ -1,8 +1,8 @@
 [package]
 name = "avocado-schema"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
-license-file = "LICENSE"
+license = "MIT"
 description = "A schema DSL which can be interpreted to implement multiple purpose"
 homepage = "https://github.com/zwnormal/avocado-schema/"
 repository = "https://github.com/zwnormal/avocado-schema/"
