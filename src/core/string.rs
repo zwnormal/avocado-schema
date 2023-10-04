@@ -2,6 +2,7 @@ use crate::base::field::{Field, FieldType};
 use crate::base::visitor::FieldEnum;
 use crate::core::constraint::common::typed::Type;
 use crate::core::constraint::string::enumeration::Enumeration;
+use crate::core::constraint::string::format::Format;
 use crate::core::constraint::string::max_length::MaxLength;
 use crate::core::constraint::string::min_length::MinLength;
 use crate::core::constraint::string::pattern::Pattern;
@@ -22,6 +23,8 @@ pub struct StringField {
     pub min_length: Option<MinLength>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pattern: Option<Pattern>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub format: Option<Format>,
 }
 
 impl Field for StringField {
@@ -69,6 +72,7 @@ pub struct StringFieldBuilder {
     max_length: Option<usize>,
     min_length: Option<usize>,
     pattern: Option<Regex>,
+    format: Option<Format>,
 }
 
 impl StringFieldBuilder {
@@ -106,6 +110,11 @@ impl StringFieldBuilder {
         self
     }
 
+    pub fn format(mut self, format: Format) -> Self {
+        self.format = Some(format);
+        self
+    }
+
     pub fn build(self) -> StringField {
         StringField {
             name: self.name,
@@ -114,12 +123,15 @@ impl StringFieldBuilder {
             max_length: self.max_length.map(|max_length| MaxLength { max_length }),
             min_length: self.min_length.map(|min_length| MinLength { min_length }),
             pattern: self.pattern.map(|pattern| Pattern { pattern }),
+            format: self.format,
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::core::constraint::string::format::email::Email;
+    use crate::core::constraint::string::format::Format;
     use crate::core::string::{StringField, StringFieldBuilder};
     use regex::Regex;
 
@@ -132,11 +144,12 @@ mod tests {
             .max_length(32)
             .min_length(8)
             .pattern(Regex::new(r"[a-z]+").unwrap())
+            .format(Format::Email(Email))
             .build();
         let field_json = serde_json::to_string(&field).unwrap();
         assert_eq!(
             field_json,
-            r#"{"type":"string","name":"subtype","title":"SubType","enum":["meeting","email"],"maxLength":32,"minLength":8,"pattern":"[a-z]+"}"#
+            r#"{"type":"string","name":"subtype","title":"SubType","enum":["meeting","email"],"maxLength":32,"minLength":8,"pattern":"[a-z]+","format":"email"}"#
         );
     }
 
@@ -150,7 +163,8 @@ mod tests {
             "enum": ["meeting", "email"],
             "maxLength": 32,
             "minLength": 8,
-            "pattern": "[a-z]+"
+            "pattern": "[a-z]+",
+            "format": "email"
         }"#;
         let field: StringField = serde_json::from_str(field_json).unwrap();
         assert_eq!(field.name, "subtype");
@@ -159,5 +173,6 @@ mod tests {
         assert_eq!(field.max_length.unwrap().max_length, 32);
         assert_eq!(field.min_length.unwrap().min_length, 8);
         assert_eq!(field.pattern.unwrap().pattern.to_string(), "[a-z]+");
+        assert_eq!(field.format.unwrap(), Format::Email(Email))
     }
 }

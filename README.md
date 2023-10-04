@@ -60,5 +60,5 @@ Due to the nature of rust `serde`, it is not hard to support other file format (
 
 We can of course, add more constraints as we need, like to support more and more constraints defined in the JSON schema.
 
-- [ ] Add `format` of `Email` constraint for the `StringField`.
-- [ ] Introduce a way to define custom constraint.
+- [x] Add `format` of `Email` constraint for the `StringField`.
+- [ ] Introduce a way to define custom constraints.
