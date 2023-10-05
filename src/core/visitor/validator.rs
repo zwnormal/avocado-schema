@@ -1,6 +1,5 @@
 use crate::base::field::Field;
 use crate::base::visitor::FieldEnum;
-use crate::base::visitor::Visitor;
 use crate::core::array::ArrayField;
 use crate::core::object::ObjectField;
 use serde::Serialize;
@@ -23,119 +22,122 @@ impl Display for ValidationError {
 
 impl Error for ValidationError {}
 
-#[derive(Debug)]
-pub struct Validator {
-    schema: Arc<FieldEnum>,
+struct State {
     value: Value,
     field_names: Vec<String>,
     errors: HashMap<String, Vec<ValidationError>>,
 }
 
+#[derive(Debug)]
+pub struct Validator {
+    schema: Arc<FieldEnum>,
+}
+
 impl Validator {
-    fn report_error(&mut self, error: ValidationError) {
-        let field = self.field_names.clone().join("/");
-        if self.errors.contains_key(field.as_str()) {
-            self.errors.get_mut(field.as_str()).unwrap().push(error);
+    fn report_error(&self, error: ValidationError, state: &mut State) {
+        let field = state.field_names.clone().join("/");
+        if state.errors.contains_key(field.as_str()) {
+            state.errors.get_mut(field.as_str()).unwrap().push(error);
         } else {
-            self.errors.insert(field, vec![error]);
+            state.errors.insert(field, vec![error]);
         }
     }
 
-    fn validate_field(&mut self, field: &(impl Field + ?Sized)) {
-        self.field_names.push(field.name().clone());
+    fn validate_field(&self, field: &(impl Field + ?Sized), state: &mut State) {
+        state.field_names.push(field.name().clone());
         for constraint in field.constrains() {
-            match constraint.validate(&self.value) {
+            match constraint.validate(&state.value) {
                 Ok(_) => {}
                 Err(e) => {
-                    self.report_error(ValidationError {
-                        message: e.to_string(),
-                    });
+                    self.report_error(
+                        ValidationError {
+                            message: e.to_string(),
+                        },
+                        state,
+                    );
                 }
             }
         }
-        self.field_names.pop();
+        state.field_names.pop();
     }
 
-    fn visit_array(&mut self, array: &ArrayField) {
-        self.validate_field(array);
-        self.field_names.push(array.name().clone());
-        if let Value::Array(values) = self.value.clone() {
+    fn visit_array(&self, array: &ArrayField, state: &mut State) {
+        self.validate_field(array, state);
+        state.field_names.push(array.name().clone());
+        if let Value::Array(values) = state.value.clone() {
             for value in values {
-                self.value = value;
-                self.visit(array.item.clone());
+                state.value = value;
+                self.visit(array.item.clone(), state);
             }
         }
-        self.field_names.pop();
+        state.field_names.pop();
     }
 
-    fn visit_object(&mut self, object: &ObjectField) {
-        self.validate_field(object);
-        self.field_names.push(object.name().clone());
-        if let Value::Object(o) = self.value.clone() {
+    fn visit_object(&self, object: &ObjectField, state: &mut State) {
+        self.validate_field(object, state);
+        state.field_names.push(object.name().clone());
+        if let Value::Object(o) = state.value.clone() {
             for (name, value) in o {
                 if let Some(field) = object.properties.get(name.as_str()) {
-                    self.value = value;
-                    self.visit(field.clone());
+                    state.value = value;
+                    self.visit(field.clone(), state);
                 };
             }
         }
-        self.field_names.pop();
+        state.field_names.pop();
+    }
+
+    fn visit(&self, field: Arc<FieldEnum>, state: &mut State) {
+        match field.as_ref() {
+            FieldEnum::Array(f) => {
+                self.visit_array(f, state);
+            }
+            FieldEnum::Boolean(f) => {
+                self.validate_field(f, state);
+            }
+            FieldEnum::Float(f) => {
+                self.validate_field(f, state);
+            }
+            FieldEnum::Integer(f) => {
+                self.validate_field(f, state);
+            }
+            FieldEnum::Object(f) => {
+                self.visit_object(f, state);
+            }
+            FieldEnum::String(f) => {
+                self.validate_field(f, state);
+            }
+        }
     }
 
     pub fn new(field: impl Field) -> Self {
         Validator {
             schema: Arc::new(field.into_enum()),
-            value: Default::default(),
-            field_names: vec![],
-            errors: Default::default(),
         }
     }
 
     pub fn validate(
-        &mut self,
+        &self,
         value: &impl Serialize,
     ) -> Result<(), HashMap<String, Vec<ValidationError>>> {
-        // Reset validator internal state
-        self.value = serde_json::to_value(value).map_err(|e| {
-            HashMap::from([(
-                "value".to_string(),
-                vec![ValidationError {
-                    message: e.to_string(),
-                }],
-            )])
-        })?;
-        self.field_names = vec![];
-        self.errors = Default::default();
-        self.visit(self.schema.clone());
-        if self.errors.is_empty() {
+        let mut state = State {
+            value: serde_json::to_value(value).map_err(|e| {
+                HashMap::from([(
+                    "value".to_string(),
+                    vec![ValidationError {
+                        message: e.to_string(),
+                    }],
+                )])
+            })?,
+            field_names: vec![],
+            errors: Default::default(),
+        };
+
+        self.visit(self.schema.clone(), &mut state);
+        if state.errors.is_empty() {
             Ok(())
         } else {
-            Err(self.errors.clone())
-        }
-    }
-}
-
-impl Visitor for Validator {
-    fn visit(&mut self, field: Arc<FieldEnum>) {
-        match field.as_ref() {
-            FieldEnum::Array(f) => {
-                self.visit_array(f);
-            }
-            FieldEnum::Boolean(f) => {
-                self.validate_field(f);
-            }
-            FieldEnum::Float(f) => {
-                self.validate_field(f);
-            }
-            FieldEnum::Integer(f) => {
-                self.validate_field(f);
-            }
-            FieldEnum::Object(f) => {
-                self.visit_object(f);
-            }
-            FieldEnum::String(f) => {
-                self.validate_field(f);
-            }
+            Err(state.errors)
         }
     }
 }
@@ -185,7 +187,7 @@ mod tests {
             }
         }"#;
         let schema: ObjectField = serde_json::from_str(schema_json).unwrap();
-        let mut validator = Validator::new(schema);
+        let validator = Validator::new(schema);
 
         let valid_client = Client {
             first_name: "Robert".to_string(),

@@ -51,7 +51,7 @@ fn test_validate() {
         }
     }"#;
     let schema: ObjectField = serde_json::from_str(schema_json).unwrap();
-    let mut validator = Validator::new(schema);
+    let validator = Validator::new(schema);
 
     let valid_client = Client {
         first_name: "Robert".to_string(),

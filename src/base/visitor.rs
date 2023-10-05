@@ -6,7 +6,6 @@ use crate::core::object::ObjectField;
 use crate::core::string::StringField;
 use serde::{Deserialize, Serialize, Serializer};
 use std::fmt::Debug;
-use std::sync::Arc;
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
@@ -33,8 +32,4 @@ impl Serialize for FieldEnum {
             FieldEnum::String(f) => f.serialize(serializer),
         }
     }
-}
-
-pub trait Visitor: Debug {
-    fn visit(&mut self, field: Arc<FieldEnum>);
 }
