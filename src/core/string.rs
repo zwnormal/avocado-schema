@@ -52,7 +52,7 @@ impl Field for StringField {
             constraints.push(Box::new(Enumeration { values: c.clone() }))
         }
         if let Some(c) = &self.max_length {
-            constraints.push(Box::new( MaxLength { max_length: *c }))
+            constraints.push(Box::new(MaxLength { max_length: *c }))
         }
         if let Some(c) = &self.min_length {
             constraints.push(Box::new(MinLength { min_length: *c }))

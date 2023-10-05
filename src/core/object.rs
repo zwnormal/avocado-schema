@@ -38,7 +38,9 @@ impl Field for ObjectField {
             typed: FieldType::Object,
         })];
         if let Some(c) = &self.required {
-            constraints.push(Box::new(Required { required: c.clone() }))
+            constraints.push(Box::new(Required {
+                required: c.clone(),
+            }))
         }
         constraints
     }

@@ -48,13 +48,13 @@ impl Field for FloatField {
             typed: FieldType::Float,
         })];
         if let Some(c) = &self.enumeration {
-            constraints.push(Box::new( Enumeration { values: c.clone() }))
+            constraints.push(Box::new(Enumeration { values: c.clone() }))
         }
         if let Some(c) = &self.maximum {
-            constraints.push(Box::new( Maximum { max_val: *c }))
+            constraints.push(Box::new(Maximum { max_val: *c }))
         }
         if let Some(c) = &self.exclusive_maximum {
-            constraints.push(Box::new( ExclusiveMaximum { max_val: *c }))
+            constraints.push(Box::new(ExclusiveMaximum { max_val: *c }))
         }
         if let Some(c) = &self.minimum {
             constraints.push(Box::new(Minimum { min_val: *c }))

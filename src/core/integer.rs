@@ -60,7 +60,7 @@ impl Field for IntegerField {
             constraints.push(Box::new(Minimum { min_val: *c }))
         }
         if let Some(c) = &self.exclusive_minimum {
-            constraints.push(Box::new( ExclusiveMinimum { min_val: *c }))
+            constraints.push(Box::new(ExclusiveMinimum { min_val: *c }))
         }
         constraints
     }

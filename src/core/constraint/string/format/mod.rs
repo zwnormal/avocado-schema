@@ -1,9 +1,9 @@
 use crate::core::constraint::string::format::email::Email;
+use crate::core::constraint::Constraint;
 use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use std::fmt::Formatter;
 use serde_json::Value;
-use crate::core::constraint::Constraint;
+use std::fmt::Formatter;
 
 pub mod email;
 
@@ -55,7 +55,7 @@ impl<'de> Visitor<'de> for FormatVisitor {
 impl Constraint for Format {
     fn validate(&self, val: &Value) -> anyhow::Result<()> {
         match self {
-            Format::Email(e) => e.validate(val)
+            Format::Email(e) => e.validate(val),
         }
     }
 }
