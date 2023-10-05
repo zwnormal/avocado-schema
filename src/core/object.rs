@@ -5,14 +5,13 @@ use crate::core::constraint::object::required::Required;
 use crate::core::constraint::Constraint;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::Arc;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "object")]
 pub struct ObjectField {
     pub name: String,
     pub title: String,
-    pub properties: HashMap<String, Arc<FieldEnum>>,
+    pub properties: HashMap<String, Box<FieldEnum>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub required: Option<Required>,
 }
@@ -49,7 +48,7 @@ impl Field for ObjectField {
 pub struct ObjectFieldBuilder {
     name: String,
     title: String,
-    properties: HashMap<String, Arc<FieldEnum>>,
+    properties: HashMap<String, Box<FieldEnum>>,
     required: Option<Vec<String>>,
 }
 
@@ -70,7 +69,7 @@ impl ObjectFieldBuilder {
 
     pub fn property(mut self, name: &'static str, field: impl Field) -> Self {
         self.properties
-            .insert(name.to_string(), Arc::new(field.into_enum()));
+            .insert(name.to_string(), Box::new(field.into_enum()));
         self
     }
 

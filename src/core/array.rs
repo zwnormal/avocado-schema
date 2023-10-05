@@ -4,14 +4,13 @@ use crate::core::constraint::common::typed::Type;
 use crate::core::constraint::Constraint;
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "array")]
 pub struct ArrayField {
     pub name: String,
     pub title: String,
-    pub item: Arc<FieldEnum>,
+    pub item: Box<FieldEnum>,
 }
 
 impl Field for ArrayField {
@@ -70,7 +69,7 @@ impl ArrayFieldBuilder {
             let field = ArrayField {
                 name: self.name,
                 title: self.title,
-                item: Arc::new(item),
+                item: Box::new(item),
             };
             Ok(field)
         } else {
