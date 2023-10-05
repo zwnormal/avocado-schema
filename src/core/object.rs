@@ -13,7 +13,7 @@ pub struct ObjectField {
     pub title: String,
     pub properties: HashMap<String, Box<FieldEnum>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub required: Option<Required>,
+    pub required: Option<Vec<String>>,
 }
 
 impl Field for ObjectField {
@@ -38,7 +38,7 @@ impl Field for ObjectField {
             typed: FieldType::Object,
         })];
         if let Some(c) = &self.required {
-            constraints.push(Box::new(c.clone()))
+            constraints.push(Box::new(Required { required: c.clone() }))
         }
         constraints
     }
@@ -83,7 +83,7 @@ impl ObjectFieldBuilder {
             name: self.name,
             title: self.title,
             properties: self.properties,
-            required: self.required.map(|required| Required { required }),
+            required: self.required,
         }
     }
 }

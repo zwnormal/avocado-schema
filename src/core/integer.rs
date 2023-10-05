@@ -14,16 +14,16 @@ use serde::{Deserialize, Serialize};
 pub struct IntegerField {
     pub name: String,
     pub title: String,
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
-    pub enumeration: Option<Enumeration>,
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
-    pub maximum: Option<Maximum>,
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
-    pub exclusive_maximum: Option<ExclusiveMaximum>,
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
-    pub minimum: Option<Minimum>,
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
-    pub exclusive_minimum: Option<ExclusiveMinimum>,
+    #[serde(rename = "enum", skip_serializing_if = "Option::is_none")]
+    pub enumeration: Option<Vec<i64>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub maximum: Option<i64>,
+    #[serde(rename = "exclusiveMaximum", skip_serializing_if = "Option::is_none")]
+    pub exclusive_maximum: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub minimum: Option<i64>,
+    #[serde(rename = "exclusiveMinimum", skip_serializing_if = "Option::is_none")]
+    pub exclusive_minimum: Option<i64>,
 }
 
 impl Field for IntegerField {
@@ -48,19 +48,19 @@ impl Field for IntegerField {
             typed: FieldType::Integer,
         })];
         if let Some(c) = &self.enumeration {
-            constraints.push(Box::new(c.clone()))
+            constraints.push(Box::new(Enumeration { values: c.clone() }))
         }
         if let Some(c) = &self.maximum {
-            constraints.push(Box::new(c.clone()))
+            constraints.push(Box::new(Maximum { max_val: *c }))
         }
         if let Some(c) = &self.exclusive_maximum {
-            constraints.push(Box::new(c.clone()))
+            constraints.push(Box::new(ExclusiveMaximum { max_val: *c }))
         }
         if let Some(c) = &self.minimum {
-            constraints.push(Box::new(c.clone()))
+            constraints.push(Box::new(Minimum { min_val: *c }))
         }
         if let Some(c) = &self.exclusive_minimum {
-            constraints.push(Box::new(c.clone()))
+            constraints.push(Box::new( ExclusiveMinimum { min_val: *c }))
         }
         constraints
     }
@@ -121,15 +121,11 @@ impl IntegerFieldBuilder {
         IntegerField {
             name: self.name,
             title: self.title,
-            enumeration: self.enumeration.map(|values| Enumeration { values }),
-            maximum: self.maximum.map(|max_val| Maximum { max_val }),
-            exclusive_maximum: self
-                .exclusive_maximum
-                .map(|max_val| ExclusiveMaximum { max_val }),
-            minimum: self.minimum.map(|min_val| Minimum { min_val }),
-            exclusive_minimum: self
-                .exclusive_minimum
-                .map(|min_val| ExclusiveMinimum { min_val }),
+            enumeration: self.enumeration,
+            maximum: self.maximum,
+            exclusive_maximum: self.exclusive_maximum,
+            minimum: self.minimum,
+            exclusive_minimum: self.exclusive_minimum,
         }
     }
 }

@@ -3,7 +3,7 @@ use anyhow::anyhow;
 use email_address_parser::EmailAddress;
 use serde_json::Value;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Email;
 
 impl Constraint for Email {

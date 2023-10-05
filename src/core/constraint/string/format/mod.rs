@@ -2,10 +2,12 @@ use crate::core::constraint::string::format::email::Email;
 use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::Formatter;
+use serde_json::Value;
+use crate::core::constraint::Constraint;
 
 pub mod email;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Format {
     Email(Email),
 }
@@ -46,6 +48,14 @@ impl<'de> Visitor<'de> for FormatVisitor {
         match v {
             "email" => Ok(Format::Email(Email)),
             _ => Err(Error::custom("string field [format] is invalid")),
+        }
+    }
+}
+
+impl Constraint for Format {
+    fn validate(&self, val: &Value) -> anyhow::Result<()> {
+        match self {
+            Format::Email(e) => e.validate(val)
         }
     }
 }

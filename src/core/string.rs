@@ -15,12 +15,12 @@ use serde::{Deserialize, Serialize};
 pub struct StringField {
     pub name: String,
     pub title: String,
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
-    pub enumeration: Option<Enumeration>,
+    #[serde(rename = "enum", skip_serializing_if = "Option::is_none")]
+    pub enumeration: Option<Vec<String>>,
     #[serde(rename = "maxLength", skip_serializing_if = "Option::is_none")]
-    pub max_length: Option<MaxLength>,
+    pub max_length: Option<usize>,
     #[serde(rename = "minLength", skip_serializing_if = "Option::is_none")]
-    pub min_length: Option<MinLength>,
+    pub min_length: Option<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pattern: Option<Pattern>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -49,16 +49,19 @@ impl Field for StringField {
             typed: FieldType::String,
         })];
         if let Some(c) = &self.enumeration {
-            constraints.push(Box::new(c.clone()))
+            constraints.push(Box::new(Enumeration { values: c.clone() }))
         }
         if let Some(c) = &self.max_length {
-            constraints.push(Box::new(c.clone()))
+            constraints.push(Box::new( MaxLength { max_length: *c }))
         }
         if let Some(c) = &self.min_length {
-            constraints.push(Box::new(c.clone()))
+            constraints.push(Box::new(MinLength { min_length: *c }))
         }
         if let Some(c) = &self.pattern {
             constraints.push(Box::new(c.clone()))
+        }
+        if let Some(c) = &self.format {
+            constraints.push(Box::new((*c).clone()))
         }
         constraints
     }
@@ -119,9 +122,9 @@ impl StringFieldBuilder {
         StringField {
             name: self.name,
             title: self.title,
-            enumeration: self.enumeration.map(|values| Enumeration { values }),
-            max_length: self.max_length.map(|max_length| MaxLength { max_length }),
-            min_length: self.min_length.map(|min_length| MinLength { min_length }),
+            enumeration: self.enumeration,
+            max_length: self.max_length,
+            min_length: self.min_length,
             pattern: self.pattern.map(|pattern| Pattern { pattern }),
             format: self.format,
         }
@@ -170,9 +173,9 @@ mod tests {
         let field: StringField = serde_json::from_str(field_json).unwrap();
         assert_eq!(field.name, "subtype");
         assert_eq!(field.title, "SubType");
-        assert_eq!(field.enumeration.unwrap().values, vec!["meeting", "email"]);
-        assert_eq!(field.max_length.unwrap().max_length, 32);
-        assert_eq!(field.min_length.unwrap().min_length, 8);
+        assert_eq!(field.enumeration.unwrap(), vec!["meeting", "email"]);
+        assert_eq!(field.max_length.unwrap(), 32);
+        assert_eq!(field.min_length.unwrap(), 8);
         assert_eq!(field.pattern.unwrap().pattern.to_string(), "[a-z]+");
         assert_eq!(field.format.unwrap(), Format::Email(Email))
     }

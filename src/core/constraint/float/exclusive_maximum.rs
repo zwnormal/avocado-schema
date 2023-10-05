@@ -1,11 +1,9 @@
 use crate::core::constraint::Constraint;
 use anyhow::{anyhow, Result};
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 pub struct ExclusiveMaximum {
-    #[serde(rename = "exclusiveMaximum")]
     pub max_val: f64,
 }
 
