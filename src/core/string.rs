@@ -133,6 +133,7 @@ mod tests {
     use crate::core::constraint::string::format::email::Email;
     use crate::core::constraint::string::format::Format;
     use crate::core::string::{StringField, StringFieldBuilder};
+    use crate::core::visitor::validator::Validator;
     use regex::Regex;
 
     #[test]
@@ -174,5 +175,16 @@ mod tests {
         assert_eq!(field.min_length.unwrap().min_length, 8);
         assert_eq!(field.pattern.unwrap().pattern.to_string(), "[a-z]+");
         assert_eq!(field.format.unwrap(), Format::Email(Email))
+    }
+
+    #[test]
+    fn test_validation() {
+        let field = StringFieldBuilder::new()
+            .enumeration(vec!["meeting".to_string(), "kickoff".to_string()])
+            .build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&"meeting").is_ok());
+        assert!(validator.validate(&"email").is_err());
     }
 }
