@@ -7,7 +7,6 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
-use std::sync::Arc;
 
 #[derive(Clone, Debug)]
 pub struct ValidationError {
@@ -30,7 +29,7 @@ struct State {
 
 #[derive(Debug)]
 pub struct Validator {
-    schema: Arc<FieldEnum>,
+    schema: FieldEnum,
 }
 
 impl Validator {
@@ -67,7 +66,7 @@ impl Validator {
         if let Value::Array(values) = state.value.clone() {
             for value in values {
                 state.value = value;
-                self.visit(array.item.clone(), state);
+                self.visit(&array.item, state);
             }
         }
         state.field_names.pop();
@@ -80,15 +79,15 @@ impl Validator {
             for (name, value) in o {
                 if let Some(field) = object.properties.get(name.as_str()) {
                     state.value = value;
-                    self.visit(field.clone(), state);
+                    self.visit(field, state);
                 };
             }
         }
         state.field_names.pop();
     }
 
-    fn visit(&self, field: Arc<FieldEnum>, state: &mut State) {
-        match field.as_ref() {
+    fn visit(&self, field: &FieldEnum, state: &mut State) {
+        match field {
             FieldEnum::Array(f) => {
                 self.visit_array(f, state);
             }
@@ -112,7 +111,7 @@ impl Validator {
 
     pub fn new(field: impl Field) -> Self {
         Validator {
-            schema: Arc::new(field.into_enum()),
+            schema: field.into_enum(),
         }
     }
 
@@ -133,7 +132,7 @@ impl Validator {
             errors: Default::default(),
         };
 
-        self.visit(self.schema.clone(), &mut state);
+        self.visit(&self.schema, &mut state);
         if state.errors.is_empty() {
             Ok(())
         } else {
