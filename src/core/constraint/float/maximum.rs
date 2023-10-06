@@ -2,7 +2,7 @@ use crate::core::constraint::Constraint;
 use anyhow::{anyhow, Result};
 use serde_json::Value;
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct Maximum {
     pub max_val: f64,
 }
