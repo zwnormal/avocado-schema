@@ -5,6 +5,7 @@ pub trait Constraint {
     fn validate(&self, val: &Value) -> Result<()>;
 }
 
+pub mod array;
 pub mod common;
 pub mod float;
 pub mod integer;

@@ -1,12 +1,10 @@
 use crate::base::field::FieldType;
 use crate::core::constraint::Constraint;
 use anyhow::{anyhow, Result};
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct Type {
-    #[serde(rename = "type")]
     pub typed: FieldType,
 }
 

@@ -1,5 +1,6 @@
 use crate::base::field::{Field, FieldType};
 use crate::base::visitor::FieldEnum;
+use crate::core::constraint::array::unique::Unique;
 use crate::core::constraint::common::typed::Type;
 use crate::core::constraint::Constraint;
 use anyhow::{anyhow, Result};
@@ -11,6 +12,7 @@ pub struct ArrayField {
     pub name: String,
     pub title: String,
     pub item: Box<FieldEnum>,
+    pub unique: Option<bool>,
 }
 
 impl Field for ArrayField {
@@ -31,9 +33,13 @@ impl Field for ArrayField {
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
-        vec![Box::new(Type {
+        let mut constraints: Vec<Box<dyn Constraint>> = vec![Box::new(Type {
             typed: FieldType::Array,
-        })]
+        })];
+        if let Some(c) = self.unique {
+            constraints.push(Box::new(Unique { unique: c }));
+        }
+        constraints
     }
 }
 
@@ -42,6 +48,7 @@ pub struct ArrayFieldBuilder {
     name: String,
     title: String,
     item: Option<FieldEnum>,
+    unique: Option<bool>,
 }
 
 impl ArrayFieldBuilder {
@@ -64,12 +71,18 @@ impl ArrayFieldBuilder {
         self
     }
 
+    pub fn unique(mut self, unique: bool) -> Self {
+        self.unique = Some(unique);
+        self
+    }
+
     pub fn build(self) -> Result<ArrayField> {
         if let Some(item) = self.item {
             let field = ArrayField {
                 name: self.name,
                 title: self.title,
                 item: Box::new(item),
+                unique: self.unique,
             };
             Ok(field)
         } else {
