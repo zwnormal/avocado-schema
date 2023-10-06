@@ -133,7 +133,6 @@ impl StringFieldBuilder {
 
 #[cfg(test)]
 mod tests {
-    use crate::core::constraint::string::format::email::Email;
     use crate::core::constraint::string::format::Format;
     use crate::core::string::{StringField, StringFieldBuilder};
     use crate::core::visitor::validator::Validator;
@@ -148,7 +147,7 @@ mod tests {
             .max_length(32)
             .min_length(8)
             .pattern(Regex::new(r"[a-z]+").unwrap())
-            .format(Format::Email(Email))
+            .format(Format::Email)
             .build();
         let field_json = serde_json::to_string(&field).unwrap();
         assert_eq!(
@@ -177,7 +176,7 @@ mod tests {
         assert_eq!(field.max_length.unwrap(), 32);
         assert_eq!(field.min_length.unwrap(), 8);
         assert_eq!(field.pattern.unwrap().pattern.to_string(), "[a-z]+");
-        assert_eq!(field.format.unwrap(), Format::Email(Email))
+        assert_eq!(field.format.unwrap(), Format::Email)
     }
 
     #[test]

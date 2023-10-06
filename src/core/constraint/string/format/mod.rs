@@ -1,15 +1,15 @@
-use crate::core::constraint::string::format::email::Email;
+pub mod email;
+
+use crate::core::constraint::string::format::email::validate_email;
 use crate::core::constraint::Constraint;
 use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use serde_json::Value;
 use std::fmt::Formatter;
 
-pub mod email;
-
 #[derive(Debug, PartialEq, Clone)]
 pub enum Format {
-    Email(Email),
+    Email,
 }
 
 impl Serialize for Format {
@@ -18,7 +18,7 @@ impl Serialize for Format {
         S: Serializer,
     {
         match self {
-            Format::Email(_) => serializer.serialize_str("email"),
+            Format::Email => serializer.serialize_str("email"),
         }
     }
 }
@@ -46,7 +46,7 @@ impl<'de> Visitor<'de> for FormatVisitor {
         E: Error,
     {
         match v {
-            "email" => Ok(Format::Email(Email)),
+            "email" => Ok(Format::Email),
             _ => Err(Error::custom("string field [format] is invalid")),
         }
     }
@@ -55,7 +55,7 @@ impl<'de> Visitor<'de> for FormatVisitor {
 impl Constraint for Format {
     fn validate(&self, val: &Value) -> anyhow::Result<()> {
         match self {
-            Format::Email(e) => e.validate(val),
+            Format::Email => validate_email(val),
         }
     }
 }
