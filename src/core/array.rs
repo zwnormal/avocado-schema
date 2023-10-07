@@ -3,7 +3,6 @@ use crate::base::visitor::FieldEnum;
 use crate::core::constraint::array::unique::Unique;
 use crate::core::constraint::common::typed::Type;
 use crate::core::constraint::Constraint;
-use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -11,7 +10,7 @@ use serde::{Deserialize, Serialize};
 pub struct ArrayField {
     pub name: String,
     pub title: String,
-    pub item: Box<FieldEnum>,
+    pub item: Option<Box<FieldEnum>>,
     pub unique: Option<bool>,
 }
 
@@ -76,17 +75,33 @@ impl ArrayFieldBuilder {
         self
     }
 
-    pub fn build(self) -> Result<ArrayField> {
-        if let Some(item) = self.item {
-            let field = ArrayField {
-                name: self.name,
-                title: self.title,
-                item: Box::new(item),
-                unique: self.unique,
-            };
-            Ok(field)
-        } else {
-            Err(anyhow!("array field must specify item field"))
+    pub fn build(self) -> ArrayField {
+        ArrayField {
+            name: self.name,
+            title: self.title,
+            item: self.item.map(|item| Box::new(item)),
+            unique: self.unique,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::core::array::ArrayFieldBuilder;
+    use crate::core::string::StringFieldBuilder;
+
+    #[test]
+    fn test_serialize() {
+        let field = ArrayFieldBuilder::new()
+            .name("tags")
+            .title("Tags")
+            .item(StringFieldBuilder::new().build())
+            .unique(true)
+            .build();
+        let field_json = serde_json::to_string(&field).unwrap();
+        assert_eq!(
+            field_json,
+            r#"{"type":"array","name":"tags","title":"Tags","item":{"type":"string","name":"","title":""},"unique":true}"#
+        );
     }
 }

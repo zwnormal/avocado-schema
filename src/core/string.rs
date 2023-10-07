@@ -213,7 +213,7 @@ mod tests {
     #[test]
     fn test_pattern() {
         let field = StringFieldBuilder::new()
-            .pattern(Regex::new("[a-z]+").unwrap())
+            .pattern(Regex::new(r"[a-z]+").unwrap())
             .build();
         let validator = Validator::new(field);
 

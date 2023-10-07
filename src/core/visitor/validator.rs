@@ -64,9 +64,11 @@ impl Validator {
         self.validate_field(array, state);
         state.field_names.push(array.name().clone());
         if let Value::Array(values) = state.value.clone() {
-            for value in values {
-                state.value = value;
-                self.visit(&array.item, state);
+            if let Some(item) = &array.item {
+                for value in values {
+                    state.value = value;
+                    self.visit(&item, state);
+                }
             }
         }
         state.field_names.pop();
