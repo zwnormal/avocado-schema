@@ -67,6 +67,7 @@ impl BooleanFieldBuilder {
 #[cfg(test)]
 mod tests {
     use crate::core::field::boolean::{BooleanField, BooleanFieldBuilder};
+    use crate::visitor::validator::Validator;
 
     #[test]
     fn test_serialize() {
@@ -92,5 +93,14 @@ mod tests {
         let field: BooleanField = serde_json::from_str(field_json).unwrap();
         assert_eq!(field.name, "married");
         assert_eq!(field.title, "Married");
+    }
+
+    #[test]
+    fn test_type() {
+        let field = BooleanFieldBuilder::new().build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&true).is_ok());
+        assert!(validator.validate(&"meeting").is_err());
     }
 }

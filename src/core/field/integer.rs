@@ -177,6 +177,15 @@ mod tests {
     }
 
     #[test]
+    fn test_type() {
+        let field = IntegerFieldBuilder::new().build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&10).is_ok());
+        assert!(validator.validate(&"meeting").is_err());
+    }
+
+    #[test]
     fn test_enumeration() {
         let field = IntegerFieldBuilder::new()
             .enumeration(vec![50, 100])

@@ -127,6 +127,15 @@ mod tests {
     }
 
     #[test]
+    fn test_type() {
+        let field = ArrayFieldBuilder::new().build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&vec![10, 20]).is_ok());
+        assert!(validator.validate(&"meeting").is_err());
+    }
+
+    #[test]
     fn test_item() {
         let field = ArrayFieldBuilder::new()
             .item(StringFieldBuilder::new().build())

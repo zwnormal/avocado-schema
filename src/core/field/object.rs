@@ -177,6 +177,23 @@ mod tests {
     }
 
     #[test]
+    fn test_type() {
+        let field = ObjectFieldBuilder::new().build();
+        let validator = Validator::new(field);
+
+        #[derive(Serialize)]
+        struct Client {
+            name: Option<String>,
+        }
+        assert!(validator
+            .validate(&Client {
+                name: Some("Robert Li".to_string())
+            })
+            .is_ok());
+        assert!(validator.validate(&"meeting").is_err());
+    }
+
+    #[test]
     fn test_required() {
         let field = ObjectFieldBuilder::new()
             .name("client")

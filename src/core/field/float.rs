@@ -177,6 +177,15 @@ mod tests {
     }
 
     #[test]
+    fn test_type() {
+        let field = FloatFieldBuilder::new().build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&10.0).is_ok());
+        assert!(validator.validate(&"meeting").is_err());
+    }
+
+    #[test]
     fn test_enumeration() {
         let field = FloatFieldBuilder::new()
             .enumeration(vec![10.0, 20.0])
