@@ -92,6 +92,10 @@ impl ObjectFieldBuilder {
 
 #[cfg(test)]
 mod tests {
+    use crate::core::field::array::ArrayFieldBuilder;
+    use crate::core::field::boolean::BooleanFieldBuilder;
+    use crate::core::field::float::FloatFieldBuilder;
+    use crate::core::field::integer::IntegerFieldBuilder;
     use crate::core::field::object::{ObjectField, ObjectFieldBuilder};
     use crate::core::field::string::StringFieldBuilder;
     use crate::visitor::validator::Validator;
@@ -118,6 +122,36 @@ mod tests {
                     .title("Last Name")
                     .max_length(32)
                     .min_length(8)
+                    .build(),
+            )
+            .property(
+                "age",
+                IntegerFieldBuilder::new()
+                    .name("age")
+                    .title("Age")
+                    .maximum(150)
+                    .minimum(1)
+                    .build(),
+            )
+            .property(
+                "stars",
+                FloatFieldBuilder::new()
+                    .name("stars")
+                    .title("Stars")
+                    .build(),
+            )
+            .property(
+                "married",
+                BooleanFieldBuilder::new()
+                    .name("married")
+                    .title("Married")
+                    .build(),
+            )
+            .property(
+                "categories",
+                ArrayFieldBuilder::new()
+                    .name("categories")
+                    .title("Categories")
                     .build(),
             )
             .build();
