@@ -4,11 +4,14 @@ Inspired by the JSON schema, Avocado Schema define a schema DSL which can be int
 
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][mit-badge]][mit-url]
+[![codecov][codecov-badge]][codecov-url]
 
 [crates-badge]: https://img.shields.io/badge/crates-0.2.1-blue
 [crates-url]: https://crates.io/crates/avocado-schema
 [mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [mit-url]: https://github.com/zwnormal/avocado-schema/blob/main/LICENSE
+[codecov-badge]: https://codecov.io/gh/zwnormal/avocado-schema/graph/badge.svg?token=D3NUTKPBYM
+[codecov-url]: https://codecov.io/gh/zwnormal/avocado-schema
 
 ## How to use
 
