@@ -1,8 +1,8 @@
-use crate::base::field::{Field, FieldType};
-use crate::base::visitor::FieldEnum;
 use crate::core::constraint::array::unique::Unique;
 use crate::core::constraint::common::typed::Type;
 use crate::core::constraint::Constraint;
+use crate::core::field::FieldEnum;
+use crate::core::field::{Field, FieldType};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -87,10 +87,10 @@ impl ArrayFieldBuilder {
 
 #[cfg(test)]
 mod tests {
-    use crate::base::visitor::FieldEnum;
-    use crate::core::array::{ArrayField, ArrayFieldBuilder};
-    use crate::core::string::StringFieldBuilder;
-    use crate::core::visitor::validator::Validator;
+    use crate::core::field::array::{ArrayField, ArrayFieldBuilder};
+    use crate::core::field::string::StringFieldBuilder;
+    use crate::core::field::FieldEnum;
+    use crate::visitor::validator::Validator;
 
     #[test]
     fn test_serialize() {

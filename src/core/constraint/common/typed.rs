@@ -1,5 +1,5 @@
-use crate::base::field::FieldType;
 use crate::core::constraint::Constraint;
+use crate::core::field::FieldType;
 use anyhow::{anyhow, Result};
 use serde_json::Value;
 
@@ -28,9 +28,9 @@ impl Constraint for Type {
 
 #[cfg(test)]
 mod tests {
-    use crate::base::field::FieldType;
     use crate::core::constraint::common::typed::Type;
     use crate::core::constraint::Constraint;
+    use crate::core::field::FieldType;
     use serde_json::Value;
 
     #[test]

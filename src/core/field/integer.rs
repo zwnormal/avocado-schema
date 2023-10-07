@@ -1,32 +1,32 @@
-use crate::base::field::{Field, FieldType};
-use crate::base::visitor::FieldEnum;
 use crate::core::constraint::common::typed::Type;
-use crate::core::constraint::float::enumeration::Enumeration;
-use crate::core::constraint::float::exclusive_maximum::ExclusiveMaximum;
-use crate::core::constraint::float::exclusive_minimum::ExclusiveMinimum;
-use crate::core::constraint::float::maximum::Maximum;
-use crate::core::constraint::float::minimum::Minimum;
+use crate::core::constraint::integer::enumeration::Enumeration;
+use crate::core::constraint::integer::exclusive_maximum::ExclusiveMaximum;
+use crate::core::constraint::integer::exclusive_minimum::ExclusiveMinimum;
+use crate::core::constraint::integer::maximum::Maximum;
+use crate::core::constraint::integer::minimum::Minimum;
 use crate::core::constraint::Constraint;
+use crate::core::field::FieldEnum;
+use crate::core::field::{Field, FieldType};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(tag = "type", rename = "float")]
-pub struct FloatField {
+#[serde(tag = "type", rename = "integer")]
+pub struct IntegerField {
     pub name: String,
     pub title: String,
     #[serde(rename = "enum", skip_serializing_if = "Option::is_none")]
-    pub enumeration: Option<Vec<f64>>,
+    pub enumeration: Option<Vec<i64>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub maximum: Option<f64>,
+    pub maximum: Option<i64>,
     #[serde(rename = "exclusiveMaximum", skip_serializing_if = "Option::is_none")]
-    pub exclusive_maximum: Option<f64>,
+    pub exclusive_maximum: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub minimum: Option<f64>,
+    pub minimum: Option<i64>,
     #[serde(rename = "exclusiveMinimum", skip_serializing_if = "Option::is_none")]
-    pub exclusive_minimum: Option<f64>,
+    pub exclusive_minimum: Option<i64>,
 }
 
-impl Field for FloatField {
+impl Field for IntegerField {
     fn name(&self) -> String {
         self.name.clone()
     }
@@ -36,16 +36,16 @@ impl Field for FloatField {
     }
 
     fn get_type(&self) -> FieldType {
-        FieldType::Float
+        FieldType::Integer
     }
 
     fn into_enum(self) -> FieldEnum {
-        FieldEnum::Float(self)
+        FieldEnum::Integer(self)
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
         let mut constraints: Vec<Box<dyn Constraint>> = vec![Box::new(Type {
-            typed: FieldType::Float,
+            typed: FieldType::Integer,
         })];
         if let Some(c) = &self.enumeration {
             constraints.push(Box::new(Enumeration { values: c.clone() }))
@@ -67,19 +67,19 @@ impl Field for FloatField {
 }
 
 #[derive(Default)]
-pub struct FloatFieldBuilder {
+pub struct IntegerFieldBuilder {
     name: String,
     title: String,
-    enumeration: Option<Vec<f64>>,
-    maximum: Option<f64>,
-    exclusive_maximum: Option<f64>,
-    minimum: Option<f64>,
-    exclusive_minimum: Option<f64>,
+    enumeration: Option<Vec<i64>>,
+    maximum: Option<i64>,
+    exclusive_maximum: Option<i64>,
+    minimum: Option<i64>,
+    exclusive_minimum: Option<i64>,
 }
 
-impl FloatFieldBuilder {
+impl IntegerFieldBuilder {
     pub fn new() -> Self {
-        FloatFieldBuilder::default()
+        IntegerFieldBuilder::default()
     }
 
     pub fn name(mut self, name: &'static str) -> Self {
@@ -92,33 +92,33 @@ impl FloatFieldBuilder {
         self
     }
 
-    pub fn enumeration(mut self, numbers: Vec<f64>) -> Self {
+    pub fn enumeration(mut self, numbers: Vec<i64>) -> Self {
         self.enumeration = Some(numbers);
         self
     }
 
-    pub fn maximum(mut self, max: f64) -> Self {
+    pub fn maximum(mut self, max: i64) -> Self {
         self.maximum = Some(max);
         self
     }
 
-    pub fn exclusive_maximum(mut self, max: f64) -> Self {
+    pub fn exclusive_maximum(mut self, max: i64) -> Self {
         self.exclusive_maximum = Some(max);
         self
     }
 
-    pub fn minimum(mut self, min: f64) -> Self {
+    pub fn minimum(mut self, min: i64) -> Self {
         self.minimum = Some(min);
         self
     }
 
-    pub fn exclusive_minimum(mut self, min: f64) -> Self {
+    pub fn exclusive_minimum(mut self, min: i64) -> Self {
         self.exclusive_minimum = Some(min);
         self
     }
 
-    pub fn build(self) -> FloatField {
-        FloatField {
+    pub fn build(self) -> IntegerField {
+        IntegerField {
             name: self.name,
             title: self.title,
             enumeration: self.enumeration,

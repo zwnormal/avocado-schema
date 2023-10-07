@@ -1,8 +1,8 @@
-use crate::base::field::{Field, FieldType};
-use crate::base::visitor::FieldEnum;
 use crate::core::constraint::common::typed::Type;
 use crate::core::constraint::object::required::Required;
 use crate::core::constraint::Constraint;
+use crate::core::field::FieldEnum;
+use crate::core::field::{Field, FieldType};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -92,9 +92,9 @@ impl ObjectFieldBuilder {
 
 #[cfg(test)]
 mod tests {
-    use crate::core::object::{ObjectField, ObjectFieldBuilder};
-    use crate::core::string::StringFieldBuilder;
-    use crate::core::visitor::validator::Validator;
+    use crate::core::field::object::{ObjectField, ObjectFieldBuilder};
+    use crate::core::field::string::StringFieldBuilder;
+    use crate::visitor::validator::Validator;
     use serde::Serialize;
 
     #[test]

@@ -8,8 +8,8 @@ Please refer to the test code in src/visitor/validator.rs for both how to write 
 
 The example defines the schema directly in `json` format, and then deserialize directly into `struct`, and then create a validator based on the schema:
 ```rust
-use avocado_schema::core::object::ObjectField;
-use avocado_schema::core::visitor::validator::Validator;
+use avocado_schema::core::field::object::ObjectField;
+use avocado_schema::visitor::validator::Validator;
 use serde::Serialize;
 
 #[test]

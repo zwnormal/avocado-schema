@@ -1,5 +1,3 @@
-use crate::base::field::{Field, FieldType};
-use crate::base::visitor::FieldEnum;
 use crate::core::constraint::common::typed::Type;
 use crate::core::constraint::string::enumeration::Enumeration;
 use crate::core::constraint::string::format::Format;
@@ -7,6 +5,8 @@ use crate::core::constraint::string::max_length::MaxLength;
 use crate::core::constraint::string::min_length::MinLength;
 use crate::core::constraint::string::pattern::Pattern;
 use crate::core::constraint::Constraint;
+use crate::core::field::FieldEnum;
+use crate::core::field::{Field, FieldType};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
@@ -134,8 +134,8 @@ impl StringFieldBuilder {
 #[cfg(test)]
 mod tests {
     use crate::core::constraint::string::format::Format;
-    use crate::core::string::{StringField, StringFieldBuilder};
-    use crate::core::visitor::validator::Validator;
+    use crate::core::field::string::{StringField, StringFieldBuilder};
+    use crate::visitor::validator::Validator;
     use regex::Regex;
 
     #[test]

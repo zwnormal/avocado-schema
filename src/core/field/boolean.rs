@@ -1,7 +1,7 @@
-use crate::base::field::{Field, FieldType};
-use crate::base::visitor::FieldEnum;
 use crate::core::constraint::common::typed::Type;
 use crate::core::constraint::Constraint;
+use crate::core::field::FieldEnum;
+use crate::core::field::{Field, FieldType};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]

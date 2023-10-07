@@ -1,7 +1,7 @@
-use crate::base::field::Field;
-use crate::base::visitor::FieldEnum;
-use crate::core::array::ArrayField;
-use crate::core::object::ObjectField;
+use crate::core::field::array::ArrayField;
+use crate::core::field::object::ObjectField;
+use crate::core::field::Field;
+use crate::core::field::FieldEnum;
 use serde::Serialize;
 use serde_json::Value;
 use std::collections::HashMap;
@@ -145,8 +145,8 @@ impl Validator {
 
 #[cfg(test)]
 mod tests {
-    use crate::core::object::ObjectField;
-    use crate::core::visitor::validator::Validator;
+    use crate::core::field::object::ObjectField;
+    use crate::visitor::validator::Validator;
     use serde::Serialize;
 
     #[test]
