@@ -2,9 +2,17 @@
 
 Inspired by the JSON schema, Avocado Schema define a schema DSL which can be interpreted to implement multiple purposes (like perform validation of the data, or generate GUIs dynamically).
 
+[![Crates.io][crates-badge]][crates-url]
+[![MIT licensed][mit-badge]][mit-url]
+
+[crates-badge]: https://img.shields.io/badge/crates-0.2.1-blue
+[crates-url]: https://crates.io/crates/avocado-schema
+[mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
+[mit-url]: https://github.com/zwnormal/avocado-schema/blob/main/LICENSE
+
 ## How to use
 
-Please refer to the test code in src/visitor/validator.rs for both how to write a visitor as well as how to validate data by the schema.
+Please refer to the test code in src/visitor/validator.rs for both how to write a visitor and how to validate data by the schema.
 
 The example defines the schema directly in `json` format, and then deserialize directly into `struct`, and then create a validator based on the schema:
 ```rust
