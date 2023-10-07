@@ -180,7 +180,7 @@ mod tests {
     }
 
     #[test]
-    fn test_validation() {
+    fn test_enumeration() {
         let field = StringFieldBuilder::new()
             .enumeration(vec!["meeting".to_string(), "kickoff".to_string()])
             .build();
@@ -188,5 +188,45 @@ mod tests {
 
         assert!(validator.validate(&"meeting").is_ok());
         assert!(validator.validate(&"email").is_err());
+    }
+
+    #[test]
+    fn test_max_length() {
+        let field = StringFieldBuilder::new().max_length(6).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&"email").is_ok());
+        assert!(validator.validate(&"emails").is_ok());
+        assert!(validator.validate(&"meeting").is_err());
+    }
+
+    #[test]
+    fn test_min_length() {
+        let field = StringFieldBuilder::new().min_length(6).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&"meeting").is_ok());
+        assert!(validator.validate(&"emails").is_ok());
+        assert!(validator.validate(&"email").is_err());
+    }
+
+    #[test]
+    fn test_pattern() {
+        let field = StringFieldBuilder::new()
+            .pattern(Regex::new("[a-z]+").unwrap())
+            .build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&"email").is_ok());
+        assert!(validator.validate(&"1234").is_err());
+    }
+
+    #[test]
+    fn test_format() {
+        let field = StringFieldBuilder::new().format(Format::Email).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&"admin@example.com").is_ok());
+        assert!(validator.validate(&"admin").is_err());
     }
 }
