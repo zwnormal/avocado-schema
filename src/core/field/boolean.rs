@@ -63,3 +63,34 @@ impl BooleanFieldBuilder {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::core::field::boolean::{BooleanField, BooleanFieldBuilder};
+
+    #[test]
+    fn test_serialize() {
+        let field = BooleanFieldBuilder::new()
+            .name("married")
+            .title("Married")
+            .build();
+        let field_json = serde_json::to_string(&field).unwrap();
+        assert_eq!(
+            field_json,
+            r#"{"type":"boolean","name":"married","title":"Married"}"#
+        )
+    }
+
+    #[test]
+    fn test_deserialize() {
+        let field_json = r#"
+        {
+            "type":"boolean",
+            "name": "married",
+            "title": "Married"
+        }"#;
+        let field: BooleanField = serde_json::from_str(field_json).unwrap();
+        assert_eq!(field.name, "married");
+        assert_eq!(field.title, "Married");
+    }
+}
