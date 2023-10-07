@@ -67,7 +67,7 @@ impl Validator {
             if let Some(item) = &array.item {
                 for value in values {
                     state.value = value;
-                    self.visit(&item, state);
+                    self.visit(item, state);
                 }
             }
         }

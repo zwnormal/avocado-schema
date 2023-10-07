@@ -79,7 +79,7 @@ impl ArrayFieldBuilder {
         ArrayField {
             name: self.name,
             title: self.title,
-            item: self.item.map(|item| Box::new(item)),
+            item: self.item.map(Box::new),
             unique: self.unique,
         }
     }
