@@ -87,8 +87,10 @@ impl ArrayFieldBuilder {
 
 #[cfg(test)]
 mod tests {
-    use crate::core::array::ArrayFieldBuilder;
+    use crate::base::visitor::FieldEnum;
+    use crate::core::array::{ArrayField, ArrayFieldBuilder};
     use crate::core::string::StringFieldBuilder;
+    use crate::core::visitor::validator::Validator;
 
     #[test]
     fn test_serialize() {
@@ -103,5 +105,44 @@ mod tests {
             field_json,
             r#"{"type":"array","name":"tags","title":"Tags","item":{"type":"string","name":"","title":""},"unique":true}"#
         );
+    }
+
+    #[test]
+    fn test_deserialize() {
+        let field_json = r#"
+        {
+            "type":"array",
+            "name": "tags",
+            "title": "Tags",
+            "item": {
+                "type":"string",
+                "name":"tag",
+                "title":"Tag"
+            },
+            "unique": true
+        }"#;
+        let field: ArrayField = serde_json::from_str(field_json).unwrap();
+        assert!(matches!(*field.item.unwrap(), FieldEnum::String(_)));
+        assert!(field.unique.unwrap());
+    }
+
+    #[test]
+    fn test_item() {
+        let field = ArrayFieldBuilder::new()
+            .item(StringFieldBuilder::new().build())
+            .build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&vec!["meeting", "email"]).is_ok());
+        assert!(validator.validate(&vec![1, 2]).is_err());
+    }
+
+    #[test]
+    fn test_unique() {
+        let field = ArrayFieldBuilder::new().unique(true).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&vec![1, 2, 3]).is_ok());
+        assert!(validator.validate(&vec![1, 2, 2]).is_err());
     }
 }
