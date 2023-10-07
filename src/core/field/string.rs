@@ -180,6 +180,15 @@ mod tests {
     }
 
     #[test]
+    fn test_type() {
+        let field = StringFieldBuilder::new().build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&"meeting").is_ok());
+        assert!(validator.validate(&10).is_err());
+    }
+
+    #[test]
     fn test_enumeration() {
         let field = StringFieldBuilder::new()
             .enumeration(vec!["meeting".to_string(), "kickoff".to_string()])
