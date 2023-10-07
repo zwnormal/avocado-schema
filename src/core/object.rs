@@ -94,6 +94,8 @@ impl ObjectFieldBuilder {
 mod tests {
     use crate::core::object::{ObjectField, ObjectFieldBuilder};
     use crate::core::string::StringFieldBuilder;
+    use crate::core::visitor::validator::Validator;
+    use serde::Serialize;
 
     #[test]
     fn test_serialize() {
@@ -172,5 +174,35 @@ mod tests {
             }
         }"#;
         assert!(serde_json::from_str::<ObjectField>(invalid_schema_json).is_err());
+    }
+
+    #[test]
+    fn test_required() {
+        let field = ObjectFieldBuilder::new()
+            .name("client")
+            .title("Client")
+            .property(
+                "name",
+                StringFieldBuilder::new()
+                    .name("name")
+                    .title("Name")
+                    .max_length(64)
+                    .min_length(1)
+                    .build(),
+            )
+            .required(vec!["name".to_string()])
+            .build();
+        let validator = Validator::new(field);
+
+        #[derive(Serialize)]
+        struct Client {
+            name: Option<String>,
+        }
+        assert!(validator
+            .validate(&Client {
+                name: Some("Robert Li".to_string())
+            })
+            .is_ok());
+        assert!(validator.validate(&Client { name: None }).is_err());
     }
 }
