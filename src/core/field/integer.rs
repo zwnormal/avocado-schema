@@ -139,7 +139,7 @@ mod tests {
     fn test_serialize() {
         let field = IntegerFieldBuilder::new()
             .name("age")
-            .title("age")
+            .title("Age")
             .enumeration(vec![50, 100])
             .maximum(100)
             .exclusive_maximum(101)
@@ -149,7 +149,7 @@ mod tests {
         let field_json = serde_json::to_string(&field).unwrap();
         assert_eq!(
             field_json,
-            r#"{"type":"integer","name":"age","title":"age","enum":[50,100],"maximum":100,"exclusiveMaximum":101,"minimum":1,"exclusiveMinimum":0}"#
+            r#"{"type":"integer","name":"age","title":"Age","enum":[50,100],"maximum":100,"exclusiveMaximum":101,"minimum":1,"exclusiveMinimum":0}"#
         );
     }
 

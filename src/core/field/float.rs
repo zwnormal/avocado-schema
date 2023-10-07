@@ -129,3 +129,26 @@ impl FloatFieldBuilder {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::core::field::float::FloatFieldBuilder;
+
+    #[test]
+    fn test_serialize() {
+        let field = FloatFieldBuilder::new()
+            .name("price")
+            .title("Price")
+            .enumeration(vec![10.0, 20.0])
+            .maximum(20.0)
+            .exclusive_maximum(20.1)
+            .minimum(10.0)
+            .exclusive_minimum(9.9)
+            .build();
+        let field_json = serde_json::to_string(&field).unwrap();
+        assert_eq!(
+            field_json,
+            r#"{"type":"float","name":"price","title":"Price","enum":[10.0,20.0],"maximum":20.0,"exclusiveMaximum":20.1,"minimum":10.0,"exclusiveMinimum":9.9}"#
+        );
+    }
+}
