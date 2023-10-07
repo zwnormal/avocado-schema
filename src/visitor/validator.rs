@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct ValidationError {
     message: String,
 }
