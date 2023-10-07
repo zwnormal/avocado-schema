@@ -132,7 +132,8 @@ impl FloatFieldBuilder {
 
 #[cfg(test)]
 mod tests {
-    use crate::core::field::float::FloatFieldBuilder;
+    use crate::core::field::float::{FloatField, FloatFieldBuilder};
+    use crate::visitor::validator::Validator;
 
     #[test]
     fn test_serialize() {
@@ -150,5 +151,79 @@ mod tests {
             field_json,
             r#"{"type":"float","name":"price","title":"Price","enum":[10.0,20.0],"maximum":20.0,"exclusiveMaximum":20.1,"minimum":10.0,"exclusiveMinimum":9.9}"#
         );
+    }
+
+    #[test]
+    fn test_deserialize() {
+        let field_json = r#"
+        {
+            "type":"float",
+            "name": "price",
+            "title": "Price",
+            "enum": [10.0, 20.0],
+            "maximum": 20.0,
+            "exclusiveMaximum": 20.1,
+            "minimum": 10.0,
+            "exclusiveMinimum": 9.9
+        }"#;
+        let field: FloatField = serde_json::from_str(field_json).unwrap();
+        assert_eq!(field.name, "price");
+        assert_eq!(field.title, "Price");
+        assert_eq!(field.enumeration.unwrap(), vec![10.0, 20.0]);
+        assert_eq!(field.maximum.unwrap(), 20.0);
+        assert_eq!(field.exclusive_maximum.unwrap(), 20.1);
+        assert_eq!(field.minimum.unwrap(), 10.0);
+        assert_eq!(field.exclusive_minimum.unwrap(), 9.9);
+    }
+
+    #[test]
+    fn test_enumeration() {
+        let field = FloatFieldBuilder::new()
+            .enumeration(vec![10.0, 20.0])
+            .build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&10.0).is_ok());
+        assert!(validator.validate(&20.1).is_err());
+    }
+
+    #[test]
+    fn test_maximum() {
+        let field = FloatFieldBuilder::new().maximum(20.0).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&19.9).is_ok());
+        assert!(validator.validate(&20.0).is_ok());
+        assert!(validator.validate(&20.1).is_err());
+    }
+
+    #[test]
+    fn test_exclusive_maximum() {
+        let field = FloatFieldBuilder::new().exclusive_maximum(20.0).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&19.9).is_ok());
+        assert!(validator.validate(&20.0).is_err());
+        assert!(validator.validate(&20.1).is_err());
+    }
+
+    #[test]
+    fn test_minimum() {
+        let field = FloatFieldBuilder::new().minimum(10.0).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&10.1).is_ok());
+        assert!(validator.validate(&10.0).is_ok());
+        assert!(validator.validate(&9.9).is_err());
+    }
+
+    #[test]
+    fn test_exclusive_minimum() {
+        let field = FloatFieldBuilder::new().exclusive_minimum(10.0).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&10.1).is_ok());
+        assert!(validator.validate(&10.0).is_err());
+        assert!(validator.validate(&9.9).is_err());
     }
 }
