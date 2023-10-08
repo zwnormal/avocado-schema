@@ -1,6 +1,6 @@
 [package]
 name = "avocado-schema"
-version = "0.2.5"
+version = "0.2.6"
 edition = "2021"
 license = "MIT"
 description = "A schema DSL which can be interpreted to implement multiple purposes"

@@ -1,10 +1,12 @@
 pub mod date;
 pub mod datetime;
 pub mod email;
+pub mod time;
 
 use crate::core::constraint::string::format::date::validate_date;
 use crate::core::constraint::string::format::datetime::validate_datetime;
 use crate::core::constraint::string::format::email::validate_email;
+use crate::core::constraint::string::format::time::validate_time;
 use crate::core::constraint::Constraint;
 use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
@@ -16,6 +18,7 @@ pub enum Format {
     Email,
     Datetime,
     Date,
+    Time,
 }
 
 impl Serialize for Format {
@@ -27,6 +30,7 @@ impl Serialize for Format {
             Format::Email => serializer.serialize_str("email"),
             Format::Datetime => serializer.serialize_str("datetime"),
             Format::Date => serializer.serialize_str("date"),
+            Format::Time => serializer.serialize_str("time"),
         }
     }
 }
@@ -57,6 +61,7 @@ impl<'de> Visitor<'de> for FormatVisitor {
             "email" => Ok(Format::Email),
             "datetime" => Ok(Format::Datetime),
             "date" => Ok(Format::Date),
+            "time" => Ok(Format::Time),
             _ => Err(Error::custom("string field [format] is invalid")),
         }
     }
@@ -68,6 +73,7 @@ impl Constraint for Format {
             Format::Email => validate_email(val),
             Format::Datetime => validate_datetime(val),
             Format::Date => validate_date(val),
+            Format::Time => validate_time(val),
         }
     }
 }
