@@ -231,11 +231,38 @@ mod tests {
     }
 
     #[test]
-    fn test_format() {
+    fn test_format_email() {
         let field = StringFieldBuilder::new().format(Format::Email).build();
         let validator = Validator::new(field);
 
         assert!(validator.validate(&"admin@example.com").is_ok());
+        assert!(validator.validate(&"admin").is_err());
+    }
+
+    #[test]
+    fn test_format_datetime() {
+        let field = StringFieldBuilder::new().format(Format::Datetime).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&"1996-12-19T16:39:57-08:00").is_ok());
+        assert!(validator.validate(&"admin").is_err());
+    }
+
+    #[test]
+    fn test_format_date() {
+        let field = StringFieldBuilder::new().format(Format::Date).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&"1996-09-19").is_ok());
+        assert!(validator.validate(&"admin").is_err());
+    }
+
+    #[test]
+    fn test_format_time() {
+        let field = StringFieldBuilder::new().format(Format::Time).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&"23:56:04").is_ok());
         assert!(validator.validate(&"admin").is_err());
     }
 }
