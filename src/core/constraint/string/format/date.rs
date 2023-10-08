@@ -7,7 +7,7 @@ pub fn validate_date(val: &Value) -> anyhow::Result<()> {
         Value::String(v) if NaiveDate::parse_from_str(v, "%Y-%m-%d").is_err() => {
             Err(anyhow!(format!(
                 "{} is not a valid date format of YYYY-MM-DD ({})",
-                v, "Datetime"
+                v, "Date"
             )))
         }
         _ => Ok(()),
