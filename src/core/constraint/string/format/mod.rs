@@ -1,5 +1,9 @@
+pub mod date;
+pub mod datetime;
 pub mod email;
 
+use crate::core::constraint::string::format::date::validate_date;
+use crate::core::constraint::string::format::datetime::validate_datetime;
 use crate::core::constraint::string::format::email::validate_email;
 use crate::core::constraint::Constraint;
 use serde::de::{Error, Visitor};
@@ -10,6 +14,8 @@ use std::fmt::Formatter;
 #[derive(Debug, PartialEq, Clone)]
 pub enum Format {
     Email,
+    Datetime,
+    Date,
 }
 
 impl Serialize for Format {
@@ -19,6 +25,8 @@ impl Serialize for Format {
     {
         match self {
             Format::Email => serializer.serialize_str("email"),
+            Format::Datetime => serializer.serialize_str("datetime"),
+            Format::Date => serializer.serialize_str("date"),
         }
     }
 }
@@ -47,6 +55,8 @@ impl<'de> Visitor<'de> for FormatVisitor {
     {
         match v {
             "email" => Ok(Format::Email),
+            "datetime" => Ok(Format::Datetime),
+            "date" => Ok(Format::Date),
             _ => Err(Error::custom("string field [format] is invalid")),
         }
     }
@@ -56,6 +66,8 @@ impl Constraint for Format {
     fn validate(&self, val: &Value) -> anyhow::Result<()> {
         match self {
             Format::Email => validate_email(val),
+            Format::Datetime => validate_datetime(val),
+            Format::Date => validate_date(val),
         }
     }
 }
