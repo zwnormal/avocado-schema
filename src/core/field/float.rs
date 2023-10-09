@@ -1,9 +1,9 @@
 use crate::core::constraint::common::typed::Type;
-use crate::core::constraint::float::enumeration::Enumeration;
-use crate::core::constraint::float::exclusive_maximum::ExclusiveMaximum;
-use crate::core::constraint::float::exclusive_minimum::ExclusiveMinimum;
-use crate::core::constraint::float::maximum::Maximum;
-use crate::core::constraint::float::minimum::Minimum;
+use crate::core::constraint::number::enumeration::Enumeration;
+use crate::core::constraint::number::exclusive_maximum::ExclusiveMaximum;
+use crate::core::constraint::number::exclusive_minimum::ExclusiveMinimum;
+use crate::core::constraint::number::maximum::Maximum;
+use crate::core::constraint::number::minimum::Minimum;
 use crate::core::constraint::Constraint;
 use crate::core::field::FieldEnum;
 use crate::core::field::{Field, FieldType};
