@@ -17,6 +17,8 @@ pub struct ObjectField {
 }
 
 impl Field for ObjectField {
+    const FIELD_TYPE: FieldType = FieldType::Object;
+
     fn name(&self) -> String {
         self.name.clone()
     }
@@ -25,17 +27,13 @@ impl Field for ObjectField {
         self.title.clone()
     }
 
-    fn get_type(&self) -> FieldType {
-        FieldType::Object
-    }
-
     fn into_enum(self) -> FieldEnum {
         FieldEnum::Object(self)
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
         let mut constraints: Vec<Box<dyn Constraint>> = vec![Box::new(Type {
-            typed: FieldType::Object,
+            typed: Self::FIELD_TYPE,
         })];
         if let Some(c) = &self.required {
             constraints.push(Box::new(Required {

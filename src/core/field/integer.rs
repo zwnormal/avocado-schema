@@ -27,6 +27,8 @@ pub struct IntegerField {
 }
 
 impl Field for IntegerField {
+    const FIELD_TYPE: FieldType = FieldType::Integer;
+
     fn name(&self) -> String {
         self.name.clone()
     }
@@ -35,17 +37,13 @@ impl Field for IntegerField {
         self.title.clone()
     }
 
-    fn get_type(&self) -> FieldType {
-        FieldType::Integer
-    }
-
     fn into_enum(self) -> FieldEnum {
         FieldEnum::Integer(self)
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
         let mut constraints: Vec<Box<dyn Constraint>> = vec![Box::new(Type {
-            typed: FieldType::Integer,
+            typed: Self::FIELD_TYPE,
         })];
         if let Some(c) = &self.enumeration {
             constraints.push(Box::new(Enumeration { values: c.clone() }))

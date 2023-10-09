@@ -12,6 +12,8 @@ pub struct BooleanField {
 }
 
 impl Field for BooleanField {
+    const FIELD_TYPE: FieldType = FieldType::Boolean;
+
     fn name(&self) -> String {
         self.name.clone()
     }
@@ -20,17 +22,13 @@ impl Field for BooleanField {
         self.title.clone()
     }
 
-    fn get_type(&self) -> FieldType {
-        FieldType::Boolean
-    }
-
     fn into_enum(self) -> FieldEnum {
         FieldEnum::Boolean(self)
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
         vec![Box::new(Type {
-            typed: FieldType::Boolean,
+            typed: Self::FIELD_TYPE,
         })]
     }
 }

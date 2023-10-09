@@ -33,9 +33,10 @@ impl fmt::Display for FieldType {
 }
 
 pub trait Field: Debug {
+    const FIELD_TYPE: FieldType;
+
     fn name(&self) -> String;
     fn title(&self) -> String;
-    fn get_type(&self) -> FieldType;
     fn into_enum(self) -> FieldEnum;
     fn constrains(&self) -> Vec<Box<dyn Constraint>>;
 }

@@ -27,6 +27,8 @@ pub struct FloatField {
 }
 
 impl Field for FloatField {
+    const FIELD_TYPE: FieldType = FieldType::Float;
+
     fn name(&self) -> String {
         self.name.clone()
     }
@@ -35,17 +37,13 @@ impl Field for FloatField {
         self.title.clone()
     }
 
-    fn get_type(&self) -> FieldType {
-        FieldType::Float
-    }
-
     fn into_enum(self) -> FieldEnum {
         FieldEnum::Float(self)
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
         let mut constraints: Vec<Box<dyn Constraint>> = vec![Box::new(Type {
-            typed: FieldType::Float,
+            typed: Self::FIELD_TYPE,
         })];
         if let Some(c) = &self.enumeration {
             constraints.push(Box::new(Enumeration { values: c.clone() }))
