@@ -1,12 +1,14 @@
 use crate::core::constraint::Constraint;
 use anyhow::{anyhow, Result};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Required {
     pub required: Vec<String>,
 }
 
+#[typetag::serde(name = "required")]
 impl Constraint for Required {
     fn validate(&self, val: &Value) -> Result<()> {
         match val {

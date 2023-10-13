@@ -1,13 +1,15 @@
 use crate::core::constraint::Constraint;
 use anyhow::{anyhow, Result};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use unicode_segmentation::UnicodeSegmentation;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MaxLength {
     pub max_length: usize,
 }
 
+#[typetag::serde(name = "maxLength")]
 impl Constraint for MaxLength {
     fn validate(&self, val: &Value) -> Result<()> {
         match val {

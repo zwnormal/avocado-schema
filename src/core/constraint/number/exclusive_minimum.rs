@@ -1,12 +1,14 @@
 use crate::core::constraint::Constraint;
 use anyhow::{anyhow, Result};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ExclusiveMinimum<T: Copy> {
     pub min_val: T,
 }
 
+#[typetag::serde(name = "integerExclusiveMinimum")]
 impl Constraint for ExclusiveMinimum<i64> {
     fn validate(&self, val: &Value) -> Result<()> {
         match val {
@@ -21,6 +23,7 @@ impl Constraint for ExclusiveMinimum<i64> {
     }
 }
 
+#[typetag::serde(name = "floatExclusiveMinimum")]
 impl Constraint for ExclusiveMinimum<f64> {
     fn validate(&self, val: &Value) -> Result<()> {
         match val {

@@ -1,5 +1,5 @@
+use crate::core::constraint::common::enumeration::Enumeration;
 use crate::core::constraint::common::typed::Type;
-use crate::core::constraint::string::enumeration::Enumeration;
 use crate::core::constraint::string::format::Format;
 use crate::core::constraint::string::max_length::MaxLength;
 use crate::core::constraint::string::min_length::MinLength;
@@ -9,6 +9,7 @@ use crate::core::field::FieldEnum;
 use crate::core::field::{Field, FieldType};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type", rename = "string")]
@@ -25,6 +26,8 @@ pub struct StringField {
     pub pattern: Option<Pattern>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub format: Option<Format>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub custom: Option<Arc<dyn Constraint>>,
 }
 
 impl Field for StringField {
@@ -42,24 +45,27 @@ impl Field for StringField {
         FieldEnum::String(self)
     }
 
-    fn constrains(&self) -> Vec<Box<dyn Constraint>> {
-        let mut constraints: Vec<Box<dyn Constraint>> = vec![Box::new(Type {
+    fn constrains(&self) -> Vec<Arc<dyn Constraint>> {
+        let mut constraints: Vec<Arc<dyn Constraint>> = vec![Arc::new(Type {
             typed: Self::FIELD_TYPE,
         })];
         if let Some(c) = &self.enumeration {
-            constraints.push(Box::new(Enumeration { values: c.clone() }))
+            constraints.push(Arc::new(Enumeration { values: c.clone() }))
         }
         if let Some(c) = &self.max_length {
-            constraints.push(Box::new(MaxLength { max_length: *c }))
+            constraints.push(Arc::new(MaxLength { max_length: *c }))
         }
         if let Some(c) = &self.min_length {
-            constraints.push(Box::new(MinLength { min_length: *c }))
+            constraints.push(Arc::new(MinLength { min_length: *c }))
         }
         if let Some(c) = &self.pattern {
-            constraints.push(Box::new(c.clone()))
+            constraints.push(Arc::new(c.clone()))
         }
         if let Some(c) = &self.format {
-            constraints.push(Box::new((*c).clone()))
+            constraints.push(Arc::new((*c).clone()))
+        }
+        if let Some(c) = &self.custom {
+            constraints.push(c.clone())
         }
         constraints
     }
@@ -74,6 +80,7 @@ pub struct StringFieldBuilder {
     min_length: Option<usize>,
     pattern: Option<Regex>,
     format: Option<Format>,
+    custom: Option<Arc<dyn Constraint>>,
 }
 
 impl StringFieldBuilder {
@@ -116,6 +123,11 @@ impl StringFieldBuilder {
         self
     }
 
+    pub fn custom(mut self, constraint: impl Constraint + 'static) -> Self {
+        self.custom = Some(Arc::new(constraint));
+        self
+    }
+
     pub fn build(self) -> StringField {
         StringField {
             name: self.name,
@@ -125,6 +137,7 @@ impl StringFieldBuilder {
             min_length: self.min_length,
             pattern: self.pattern.map(|pattern| Pattern { pattern }),
             format: self.format,
+            custom: self.custom,
         }
     }
 }

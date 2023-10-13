@@ -1,13 +1,15 @@
 use crate::core::constraint::Constraint;
 use crate::core::field::FieldType;
 use anyhow::{anyhow, Result};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Type {
     pub typed: FieldType,
 }
 
+#[typetag::serde(name = "type")]
 impl Constraint for Type {
     fn validate(&self, val: &Value) -> Result<()> {
         match val {

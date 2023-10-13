@@ -1,5 +1,5 @@
+use crate::core::constraint::common::enumeration::Enumeration;
 use crate::core::constraint::common::typed::Type;
-use crate::core::constraint::number::enumeration::Enumeration;
 use crate::core::constraint::number::exclusive_maximum::ExclusiveMaximum;
 use crate::core::constraint::number::exclusive_minimum::ExclusiveMinimum;
 use crate::core::constraint::number::maximum::Maximum;
@@ -8,6 +8,7 @@ use crate::core::constraint::Constraint;
 use crate::core::field::FieldEnum;
 use crate::core::field::{Field, FieldType};
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "float")]
@@ -24,6 +25,8 @@ pub struct FloatField {
     pub minimum: Option<f64>,
     #[serde(rename = "exclusiveMinimum", skip_serializing_if = "Option::is_none")]
     pub exclusive_minimum: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub custom: Option<Arc<dyn Constraint>>,
 }
 
 impl Field for FloatField {
@@ -41,24 +44,27 @@ impl Field for FloatField {
         FieldEnum::Float(self)
     }
 
-    fn constrains(&self) -> Vec<Box<dyn Constraint>> {
-        let mut constraints: Vec<Box<dyn Constraint>> = vec![Box::new(Type {
+    fn constrains(&self) -> Vec<Arc<dyn Constraint>> {
+        let mut constraints: Vec<Arc<dyn Constraint>> = vec![Arc::new(Type {
             typed: Self::FIELD_TYPE,
         })];
         if let Some(c) = &self.enumeration {
-            constraints.push(Box::new(Enumeration { values: c.clone() }))
+            constraints.push(Arc::new(Enumeration { values: c.clone() }))
         }
         if let Some(c) = &self.maximum {
-            constraints.push(Box::new(Maximum { max_val: *c }))
+            constraints.push(Arc::new(Maximum { max_val: *c }))
         }
         if let Some(c) = &self.exclusive_maximum {
-            constraints.push(Box::new(ExclusiveMaximum { max_val: *c }))
+            constraints.push(Arc::new(ExclusiveMaximum { max_val: *c }))
         }
         if let Some(c) = &self.minimum {
-            constraints.push(Box::new(Minimum { min_val: *c }))
+            constraints.push(Arc::new(Minimum { min_val: *c }))
         }
         if let Some(c) = &self.exclusive_minimum {
-            constraints.push(Box::new(ExclusiveMinimum { min_val: *c }))
+            constraints.push(Arc::new(ExclusiveMinimum { min_val: *c }))
+        }
+        if let Some(c) = &self.custom {
+            constraints.push(c.clone())
         }
         constraints
     }
@@ -73,6 +79,7 @@ pub struct FloatFieldBuilder {
     exclusive_maximum: Option<f64>,
     minimum: Option<f64>,
     exclusive_minimum: Option<f64>,
+    custom: Option<Arc<dyn Constraint>>,
 }
 
 impl FloatFieldBuilder {
@@ -115,6 +122,11 @@ impl FloatFieldBuilder {
         self
     }
 
+    pub fn custom(mut self, constraint: impl Constraint + 'static) -> Self {
+        self.custom = Some(Arc::new(constraint));
+        self
+    }
+
     pub fn build(self) -> FloatField {
         FloatField {
             name: self.name,
@@ -124,6 +136,7 @@ impl FloatFieldBuilder {
             exclusive_maximum: self.exclusive_maximum,
             minimum: self.minimum,
             exclusive_minimum: self.exclusive_minimum,
+            custom: self.custom,
         }
     }
 }
