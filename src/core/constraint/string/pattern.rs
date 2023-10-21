@@ -50,7 +50,6 @@ impl<'de> Visitor<'de> for PatternVisitor {
     }
 }
 
-#[typetag::serde(name = "pattern")]
 impl Constraint for Pattern {
     fn validate(&self, val: &Value) -> Result<()> {
         match val {

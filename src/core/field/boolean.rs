@@ -3,16 +3,12 @@ use crate::core::constraint::Constraint;
 use crate::core::field::FieldEnum;
 use crate::core::field::{Field, FieldType};
 use serde::{Deserialize, Serialize};
-use std::fmt::Debug;
-use std::sync::Arc;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "boolean")]
 pub struct BooleanField {
     pub name: String,
     pub title: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom: Option<Arc<dyn Constraint>>,
 }
 
 impl Field for BooleanField {
@@ -30,14 +26,10 @@ impl Field for BooleanField {
         FieldEnum::Boolean(self)
     }
 
-    fn constrains(&self) -> Vec<Arc<dyn Constraint>> {
-        let mut constraints: Vec<Arc<dyn Constraint>> = vec![Arc::new(Type {
+    fn constrains(&self) -> Vec<Box<dyn Constraint>> {
+        vec![Box::new(Type {
             typed: Self::FIELD_TYPE,
-        })];
-        if let Some(c) = &self.custom {
-            constraints.push(c.clone())
-        }
-        constraints
+        })]
     }
 }
 
@@ -45,7 +37,6 @@ impl Field for BooleanField {
 pub struct BooleanFieldBuilder {
     name: String,
     title: String,
-    custom: Option<Arc<dyn Constraint>>,
 }
 
 impl BooleanFieldBuilder {
@@ -63,16 +54,10 @@ impl BooleanFieldBuilder {
         self
     }
 
-    pub fn custom(mut self, constraint: impl Constraint + 'static) -> Self {
-        self.custom = Some(Arc::new(constraint));
-        self
-    }
-
     pub fn build(self) -> BooleanField {
         BooleanField {
             name: self.name,
             title: self.title,
-            custom: self.custom,
         }
     }
 }

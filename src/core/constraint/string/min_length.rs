@@ -1,15 +1,13 @@
 use crate::core::constraint::Constraint;
 use anyhow::{anyhow, Result};
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use unicode_segmentation::UnicodeSegmentation;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 pub struct MinLength {
     pub min_length: usize,
 }
 
-#[typetag::serde(name = "minLength")]
 impl Constraint for MinLength {
     fn validate(&self, val: &Value) -> Result<()> {
         match val {

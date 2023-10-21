@@ -4,7 +4,6 @@ use crate::core::constraint::Constraint;
 use crate::core::field::FieldEnum;
 use crate::core::field::{Field, FieldType};
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "array")]
@@ -13,8 +12,6 @@ pub struct ArrayField {
     pub title: String,
     pub item: Option<Box<FieldEnum>>,
     pub unique: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom: Option<Arc<dyn Constraint>>,
 }
 
 impl Field for ArrayField {
@@ -32,15 +29,12 @@ impl Field for ArrayField {
         FieldEnum::Array(self)
     }
 
-    fn constrains(&self) -> Vec<Arc<dyn Constraint>> {
-        let mut constraints: Vec<Arc<dyn Constraint>> = vec![Arc::new(Type {
+    fn constrains(&self) -> Vec<Box<dyn Constraint>> {
+        let mut constraints: Vec<Box<dyn Constraint>> = vec![Box::new(Type {
             typed: Self::FIELD_TYPE,
         })];
         if let Some(c) = self.unique {
-            constraints.push(Arc::new(Unique { unique: c }));
-        }
-        if let Some(c) = &self.custom {
-            constraints.push(c.clone())
+            constraints.push(Box::new(Unique { unique: c }));
         }
         constraints
     }
@@ -52,7 +46,6 @@ pub struct ArrayFieldBuilder {
     title: String,
     item: Option<FieldEnum>,
     unique: Option<bool>,
-    custom: Option<Arc<dyn Constraint>>,
 }
 
 impl ArrayFieldBuilder {
@@ -80,18 +73,12 @@ impl ArrayFieldBuilder {
         self
     }
 
-    pub fn custom(mut self, constraint: impl Constraint + 'static) -> Self {
-        self.custom = Some(Arc::new(constraint));
-        self
-    }
-
     pub fn build(self) -> ArrayField {
         ArrayField {
             name: self.name,
             title: self.title,
             item: self.item.map(Box::new),
             unique: self.unique,
-            custom: self.custom,
         }
     }
 }

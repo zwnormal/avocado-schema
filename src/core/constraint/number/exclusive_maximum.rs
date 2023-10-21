@@ -1,14 +1,12 @@
 use crate::core::constraint::Constraint;
 use anyhow::{anyhow, Result};
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct ExclusiveMaximum<T: Copy> {
     pub max_val: T,
 }
 
-#[typetag::serde(name = "integerExclusiveMaximum")]
 impl Constraint for ExclusiveMaximum<i64> {
     fn validate(&self, val: &Value) -> Result<()> {
         match val {
@@ -23,7 +21,6 @@ impl Constraint for ExclusiveMaximum<i64> {
     }
 }
 
-#[typetag::serde(name = "floatExclusiveMaximum")]
 impl Constraint for ExclusiveMaximum<f64> {
     fn validate(&self, val: &Value) -> Result<()> {
         match val {

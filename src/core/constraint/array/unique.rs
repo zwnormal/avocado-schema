@@ -1,14 +1,12 @@
 use crate::core::constraint::Constraint;
 use anyhow::anyhow;
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct Unique {
     pub unique: bool,
 }
 
-#[typetag::serde(name = "unique")]
 impl Constraint for Unique {
     fn validate(&self, val: &Value) -> anyhow::Result<()> {
         match val {

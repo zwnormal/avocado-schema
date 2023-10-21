@@ -1,9 +1,7 @@
 use anyhow::Result;
 use serde_json::Value;
-use std::fmt::Debug;
 
-#[typetag::serde(tag = "constraint")]
-pub trait Constraint: Debug {
+pub trait Constraint {
     fn validate(&self, val: &Value) -> Result<()>;
 }
 

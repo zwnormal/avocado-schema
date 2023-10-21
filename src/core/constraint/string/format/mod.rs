@@ -67,7 +67,6 @@ impl<'de> Visitor<'de> for FormatVisitor {
     }
 }
 
-#[typetag::serde(name = "format")]
 impl Constraint for Format {
     fn validate(&self, val: &Value) -> anyhow::Result<()> {
         match self {

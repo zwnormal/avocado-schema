@@ -1,5 +1,5 @@
-use crate::core::constraint::common::enumeration::Enumeration;
 use crate::core::constraint::common::typed::Type;
+use crate::core::constraint::number::enumeration::Enumeration;
 use crate::core::constraint::number::exclusive_maximum::ExclusiveMaximum;
 use crate::core::constraint::number::exclusive_minimum::ExclusiveMinimum;
 use crate::core::constraint::number::maximum::Maximum;
@@ -8,7 +8,6 @@ use crate::core::constraint::Constraint;
 use crate::core::field::FieldEnum;
 use crate::core::field::{Field, FieldType};
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "integer")]
@@ -25,8 +24,6 @@ pub struct IntegerField {
     pub minimum: Option<i64>,
     #[serde(rename = "exclusiveMinimum", skip_serializing_if = "Option::is_none")]
     pub exclusive_minimum: Option<i64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom: Option<Arc<dyn Constraint>>,
 }
 
 impl Field for IntegerField {
@@ -44,27 +41,24 @@ impl Field for IntegerField {
         FieldEnum::Integer(self)
     }
 
-    fn constrains(&self) -> Vec<Arc<dyn Constraint>> {
-        let mut constraints: Vec<Arc<dyn Constraint>> = vec![Arc::new(Type {
+    fn constrains(&self) -> Vec<Box<dyn Constraint>> {
+        let mut constraints: Vec<Box<dyn Constraint>> = vec![Box::new(Type {
             typed: Self::FIELD_TYPE,
         })];
         if let Some(c) = &self.enumeration {
-            constraints.push(Arc::new(Enumeration { values: c.clone() }))
+            constraints.push(Box::new(Enumeration { values: c.clone() }))
         }
         if let Some(c) = &self.maximum {
-            constraints.push(Arc::new(Maximum { max_val: *c }))
+            constraints.push(Box::new(Maximum { max_val: *c }))
         }
         if let Some(c) = &self.exclusive_maximum {
-            constraints.push(Arc::new(ExclusiveMaximum { max_val: *c }))
+            constraints.push(Box::new(ExclusiveMaximum { max_val: *c }))
         }
         if let Some(c) = &self.minimum {
-            constraints.push(Arc::new(Minimum { min_val: *c }))
+            constraints.push(Box::new(Minimum { min_val: *c }))
         }
         if let Some(c) = &self.exclusive_minimum {
-            constraints.push(Arc::new(ExclusiveMinimum { min_val: *c }))
-        }
-        if let Some(c) = &self.custom {
-            constraints.push(c.clone())
+            constraints.push(Box::new(ExclusiveMinimum { min_val: *c }))
         }
         constraints
     }
@@ -79,7 +73,6 @@ pub struct IntegerFieldBuilder {
     exclusive_maximum: Option<i64>,
     minimum: Option<i64>,
     exclusive_minimum: Option<i64>,
-    custom: Option<Arc<dyn Constraint>>,
 }
 
 impl IntegerFieldBuilder {
@@ -122,11 +115,6 @@ impl IntegerFieldBuilder {
         self
     }
 
-    pub fn custom(mut self, constraint: impl Constraint + 'static) -> Self {
-        self.custom = Some(Arc::new(constraint));
-        self
-    }
-
     pub fn build(self) -> IntegerField {
         IntegerField {
             name: self.name,
@@ -136,7 +124,6 @@ impl IntegerFieldBuilder {
             exclusive_maximum: self.exclusive_maximum,
             minimum: self.minimum,
             exclusive_minimum: self.exclusive_minimum,
-            custom: self.custom,
         }
     }
 }

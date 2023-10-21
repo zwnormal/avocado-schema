@@ -5,7 +5,6 @@ use crate::core::field::FieldEnum;
 use crate::core::field::{Field, FieldType};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::Arc;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "object")]
@@ -15,8 +14,6 @@ pub struct ObjectField {
     pub properties: HashMap<String, Box<FieldEnum>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub required: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom: Option<Arc<dyn Constraint>>,
 }
 
 impl Field for ObjectField {
@@ -34,17 +31,14 @@ impl Field for ObjectField {
         FieldEnum::Object(self)
     }
 
-    fn constrains(&self) -> Vec<Arc<dyn Constraint>> {
-        let mut constraints: Vec<Arc<dyn Constraint>> = vec![Arc::new(Type {
+    fn constrains(&self) -> Vec<Box<dyn Constraint>> {
+        let mut constraints: Vec<Box<dyn Constraint>> = vec![Box::new(Type {
             typed: Self::FIELD_TYPE,
         })];
         if let Some(c) = &self.required {
-            constraints.push(Arc::new(Required {
+            constraints.push(Box::new(Required {
                 required: c.clone(),
             }))
-        }
-        if let Some(c) = &self.custom {
-            constraints.push(c.clone())
         }
         constraints
     }
@@ -56,7 +50,6 @@ pub struct ObjectFieldBuilder {
     title: String,
     properties: HashMap<String, Box<FieldEnum>>,
     required: Option<Vec<String>>,
-    custom: Option<Arc<dyn Constraint>>,
 }
 
 impl ObjectFieldBuilder {
@@ -85,18 +78,12 @@ impl ObjectFieldBuilder {
         self
     }
 
-    pub fn custom(mut self, constraint: impl Constraint + 'static) -> Self {
-        self.custom = Some(Arc::new(constraint));
-        self
-    }
-
     pub fn build(self) -> ObjectField {
         ObjectField {
             name: self.name,
             title: self.title,
             properties: self.properties,
             required: self.required,
-            custom: self.custom,
         }
     }
 }

@@ -8,9 +8,8 @@ use crate::core::field::string::StringField;
 use serde::{Deserialize, Serialize, Serializer};
 use std::fmt;
 use std::fmt::{Debug, Formatter};
-use std::sync::Arc;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub enum FieldType {
     String,
     Integer,
@@ -39,7 +38,7 @@ pub trait Field: Debug {
     fn name(&self) -> String;
     fn title(&self) -> String;
     fn into_enum(self) -> FieldEnum;
-    fn constrains(&self) -> Vec<Arc<dyn Constraint>>;
+    fn constrains(&self) -> Vec<Box<dyn Constraint>>;
 }
 
 pub mod array;
