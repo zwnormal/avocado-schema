@@ -1,6 +1,5 @@
 use crate::core::constraint::common::typed::Type;
 use crate::core::constraint::string::enumeration::Enumeration;
-use crate::core::constraint::string::format::Format;
 use crate::core::constraint::string::max_length::MaxLength;
 use crate::core::constraint::string::min_length::MinLength;
 use crate::core::constraint::string::pattern::Pattern;
@@ -23,8 +22,6 @@ pub struct StringField {
     pub min_length: Option<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pattern: Option<Pattern>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub format: Option<Format>,
 }
 
 impl Field for StringField {
@@ -58,9 +55,6 @@ impl Field for StringField {
         if let Some(c) = &self.pattern {
             constraints.push(Box::new(c.clone()))
         }
-        if let Some(c) = &self.format {
-            constraints.push(Box::new((*c).clone()))
-        }
         constraints
     }
 }
@@ -73,7 +67,6 @@ pub struct StringFieldBuilder {
     max_length: Option<usize>,
     min_length: Option<usize>,
     pattern: Option<Regex>,
-    format: Option<Format>,
 }
 
 impl StringFieldBuilder {
@@ -111,11 +104,6 @@ impl StringFieldBuilder {
         self
     }
 
-    pub fn format(mut self, format: Format) -> Self {
-        self.format = Some(format);
-        self
-    }
-
     pub fn build(self) -> StringField {
         StringField {
             name: self.name,
@@ -124,14 +112,12 @@ impl StringFieldBuilder {
             max_length: self.max_length,
             min_length: self.min_length,
             pattern: self.pattern.map(|pattern| Pattern { pattern }),
-            format: self.format,
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::core::constraint::string::format::Format;
     use crate::core::field::string::{StringField, StringFieldBuilder};
     use crate::visitor::validator::Validator;
     use regex::Regex;
@@ -145,12 +131,11 @@ mod tests {
             .max_length(32)
             .min_length(8)
             .pattern(Regex::new(r"[a-z]+").unwrap())
-            .format(Format::Email)
             .build();
         let field_json = serde_json::to_string(&field).unwrap();
         assert_eq!(
             field_json,
-            r#"{"type":"string","name":"subtype","title":"SubType","enum":["meeting","email"],"maxLength":32,"minLength":8,"pattern":"[a-z]+","format":"email"}"#
+            r#"{"type":"string","name":"subtype","title":"SubType","enum":["meeting","email"],"maxLength":32,"minLength":8,"pattern":"[a-z]+"}"#
         );
     }
 
@@ -164,8 +149,7 @@ mod tests {
             "enum": ["meeting", "email"],
             "maxLength": 32,
             "minLength": 8,
-            "pattern": "[a-z]+",
-            "format": "email"
+            "pattern": "[a-z]+"
         }"#;
         let field: StringField = serde_json::from_str(field_json).unwrap();
         assert_eq!(field.name, "subtype");
@@ -174,7 +158,6 @@ mod tests {
         assert_eq!(field.max_length.unwrap(), 32);
         assert_eq!(field.min_length.unwrap(), 8);
         assert_eq!(field.pattern.unwrap().pattern.to_string(), "[a-z]+");
-        assert_eq!(field.format.unwrap(), Format::Email)
     }
 
     #[test]
@@ -226,41 +209,5 @@ mod tests {
 
         assert!(validator.validate(&"email").is_ok());
         assert!(validator.validate(&"1234").is_err());
-    }
-
-    #[test]
-    fn test_format_email() {
-        let field = StringFieldBuilder::new().format(Format::Email).build();
-        let validator = Validator::new(field);
-
-        assert!(validator.validate(&"admin@example.com").is_ok());
-        assert!(validator.validate(&"admin").is_err());
-    }
-
-    #[test]
-    fn test_format_datetime() {
-        let field = StringFieldBuilder::new().format(Format::Datetime).build();
-        let validator = Validator::new(field);
-
-        assert!(validator.validate(&"1996-12-19T16:39:57-08:00").is_ok());
-        assert!(validator.validate(&"admin").is_err());
-    }
-
-    #[test]
-    fn test_format_date() {
-        let field = StringFieldBuilder::new().format(Format::Date).build();
-        let validator = Validator::new(field);
-
-        assert!(validator.validate(&"1996-09-19").is_ok());
-        assert!(validator.validate(&"admin").is_err());
-    }
-
-    #[test]
-    fn test_format_time() {
-        let field = StringFieldBuilder::new().format(Format::Time).build();
-        let validator = Validator::new(field);
-
-        assert!(validator.validate(&"23:56:04").is_ok());
-        assert!(validator.validate(&"admin").is_err());
     }
 }

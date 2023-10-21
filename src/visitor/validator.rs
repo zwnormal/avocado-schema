@@ -90,24 +90,16 @@ impl Validator {
 
     fn visit(&self, field: &FieldEnum, state: &mut State) {
         match field {
-            FieldEnum::Array(f) => {
-                self.visit_array(f, state);
-            }
-            FieldEnum::Boolean(f) => {
-                self.validate_field(f, state);
-            }
-            FieldEnum::Float(f) => {
-                self.validate_field(f, state);
-            }
-            FieldEnum::Integer(f) => {
-                self.validate_field(f, state);
-            }
-            FieldEnum::Object(f) => {
-                self.visit_object(f, state);
-            }
-            FieldEnum::String(f) => {
-                self.validate_field(f, state);
-            }
+            FieldEnum::Array(f) => self.visit_array(f, state),
+            FieldEnum::Boolean(f) => self.validate_field(f, state),
+            FieldEnum::Float(f) => self.validate_field(f, state),
+            FieldEnum::Integer(f) => self.validate_field(f, state),
+            FieldEnum::Object(f) => self.visit_object(f, state),
+            FieldEnum::String(f) => self.validate_field(f, state),
+            FieldEnum::Email(f) => self.validate_field(f, state),
+            FieldEnum::Datetime(f) => self.validate_field(f, state),
+            FieldEnum::Date(f) => self.validate_field(f, state),
+            FieldEnum::Time(f) => self.validate_field(f, state),
         }
     }
 

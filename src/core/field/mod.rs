@@ -1,10 +1,14 @@
 use crate::core::constraint::Constraint;
 use crate::core::field::array::ArrayField;
 use crate::core::field::boolean::BooleanField;
+use crate::core::field::date::DateField;
+use crate::core::field::datetime::DatetimeField;
+use crate::core::field::email::EmailField;
 use crate::core::field::float::FloatField;
 use crate::core::field::integer::IntegerField;
 use crate::core::field::object::ObjectField;
 use crate::core::field::string::StringField;
+use crate::core::field::time::TimeField;
 use serde::{Deserialize, Serialize, Serializer};
 use std::fmt;
 use std::fmt::{Debug, Formatter};
@@ -17,6 +21,10 @@ pub enum FieldType {
     Boolean,
     Object,
     Array,
+    Email,
+    DateTime,
+    Date,
+    Time,
 }
 
 impl fmt::Display for FieldType {
@@ -28,6 +36,10 @@ impl fmt::Display for FieldType {
             FieldType::Boolean => write!(f, "boolean"),
             FieldType::Array => write!(f, "array"),
             FieldType::Object => write!(f, "object"),
+            FieldType::Email => write!(f, "email"),
+            FieldType::DateTime => write!(f, "datetime"),
+            FieldType::Date => write!(f, "date"),
+            FieldType::Time => write!(f, "time"),
         }
     }
 }
@@ -43,10 +55,14 @@ pub trait Field: Debug {
 
 pub mod array;
 pub mod boolean;
+pub mod date;
+pub mod datetime;
+pub mod email;
 pub mod float;
 pub mod integer;
 pub mod object;
 pub mod string;
+pub mod time;
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
@@ -57,6 +73,10 @@ pub enum FieldEnum {
     Integer(IntegerField),
     Object(ObjectField),
     String(StringField),
+    Email(EmailField),
+    Datetime(DatetimeField),
+    Date(DateField),
+    Time(TimeField),
 }
 
 impl Serialize for FieldEnum {
@@ -71,6 +91,10 @@ impl Serialize for FieldEnum {
             FieldEnum::Integer(f) => f.serialize(serializer),
             FieldEnum::Object(f) => f.serialize(serializer),
             FieldEnum::String(f) => f.serialize(serializer),
+            FieldEnum::Email(f) => f.serialize(serializer),
+            FieldEnum::Datetime(f) => f.serialize(serializer),
+            FieldEnum::Date(f) => f.serialize(serializer),
+            FieldEnum::Time(f) => f.serialize(serializer),
         }
     }
 }
