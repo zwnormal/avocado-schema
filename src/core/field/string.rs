@@ -4,7 +4,6 @@ use crate::core::constraint::string::max_length::MaxLength;
 use crate::core::constraint::string::min_length::MinLength;
 use crate::core::constraint::string::pattern::Pattern;
 use crate::core::constraint::Constraint;
-use crate::core::field::FieldEnum;
 use crate::core::field::{Field, FieldType};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -33,10 +32,6 @@ impl Field for StringField {
 
     fn title(&self) -> String {
         self.title.clone()
-    }
-
-    fn into_enum(self) -> FieldEnum {
-        FieldEnum::String(self)
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {

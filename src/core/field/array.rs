@@ -25,10 +25,6 @@ impl Field for ArrayField {
         self.title.clone()
     }
 
-    fn into_enum(self) -> FieldEnum {
-        FieldEnum::Array(self)
-    }
-
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
         let mut constraints: Vec<Box<dyn Constraint>> = vec![Box::new(Type {
             typed: Self::FIELD_TYPE,
@@ -64,7 +60,7 @@ impl ArrayFieldBuilder {
     }
 
     pub fn item(mut self, item: impl Field) -> Self {
-        self.item = Some(item.into_enum());
+        self.item = Some(item.into());
         self
     }
 

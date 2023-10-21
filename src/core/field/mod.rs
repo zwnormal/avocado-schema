@@ -44,12 +44,11 @@ impl fmt::Display for FieldType {
     }
 }
 
-pub trait Field: Debug {
+pub trait Field: Debug + Into<FieldEnum> {
     const FIELD_TYPE: FieldType;
 
     fn name(&self) -> String;
     fn title(&self) -> String;
-    fn into_enum(self) -> FieldEnum;
     fn constrains(&self) -> Vec<Box<dyn Constraint>>;
 }
 
@@ -96,5 +95,65 @@ impl Serialize for FieldEnum {
             FieldEnum::Date(f) => f.serialize(serializer),
             FieldEnum::Time(f) => f.serialize(serializer),
         }
+    }
+}
+
+impl From<ArrayField> for FieldEnum {
+    fn from(value: ArrayField) -> Self {
+        FieldEnum::Array(value)
+    }
+}
+
+impl From<BooleanField> for FieldEnum {
+    fn from(value: BooleanField) -> Self {
+        FieldEnum::Boolean(value)
+    }
+}
+
+impl From<DateField> for FieldEnum {
+    fn from(value: DateField) -> Self {
+        FieldEnum::Date(value)
+    }
+}
+
+impl From<DatetimeField> for FieldEnum {
+    fn from(value: DatetimeField) -> Self {
+        FieldEnum::Datetime(value)
+    }
+}
+
+impl From<EmailField> for FieldEnum {
+    fn from(value: EmailField) -> Self {
+        FieldEnum::Email(value)
+    }
+}
+
+impl From<FloatField> for FieldEnum {
+    fn from(value: FloatField) -> Self {
+        FieldEnum::Float(value)
+    }
+}
+
+impl From<IntegerField> for FieldEnum {
+    fn from(value: IntegerField) -> Self {
+        FieldEnum::Integer(value)
+    }
+}
+
+impl From<ObjectField> for FieldEnum {
+    fn from(value: ObjectField) -> Self {
+        FieldEnum::Object(value)
+    }
+}
+
+impl From<StringField> for FieldEnum {
+    fn from(value: StringField) -> Self {
+        FieldEnum::String(value)
+    }
+}
+
+impl From<TimeField> for FieldEnum {
+    fn from(value: TimeField) -> Self {
+        FieldEnum::Time(value)
     }
 }

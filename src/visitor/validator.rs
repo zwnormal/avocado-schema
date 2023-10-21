@@ -105,7 +105,7 @@ impl Validator {
 
     pub fn new(field: impl Field) -> Self {
         Validator {
-            schema: field.into_enum(),
+            schema: field.into(),
         }
     }
 

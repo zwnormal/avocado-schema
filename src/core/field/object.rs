@@ -27,10 +27,6 @@ impl Field for ObjectField {
         self.title.clone()
     }
 
-    fn into_enum(self) -> FieldEnum {
-        FieldEnum::Object(self)
-    }
-
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
         let mut constraints: Vec<Box<dyn Constraint>> = vec![Box::new(Type {
             typed: Self::FIELD_TYPE,
@@ -69,7 +65,7 @@ impl ObjectFieldBuilder {
 
     pub fn property(mut self, name: &'static str, field: impl Field) -> Self {
         self.properties
-            .insert(name.to_string(), Box::new(field.into_enum()));
+            .insert(name.to_string(), Box::new(field.into()));
         self
     }
 

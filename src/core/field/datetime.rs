@@ -1,6 +1,6 @@
 use crate::core::constraint::common::typed::Type;
 use crate::core::constraint::Constraint;
-use crate::core::field::{Field, FieldEnum, FieldType};
+use crate::core::field::{Field, FieldType};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -19,10 +19,6 @@ impl Field for DatetimeField {
 
     fn title(&self) -> String {
         self.title.clone()
-    }
-
-    fn into_enum(self) -> FieldEnum {
-        FieldEnum::Datetime(self)
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {

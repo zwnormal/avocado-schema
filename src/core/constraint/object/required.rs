@@ -17,7 +17,7 @@ impl Constraint for Required {
                         None => {
                             missing_fields.push(field.clone());
                         }
-                        Some(v) if v == &Value::Null => {
+                        Some(&Value::Null) => {
                             missing_fields.push(field.clone());
                         }
                         _ => {}

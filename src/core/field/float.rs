@@ -5,7 +5,6 @@ use crate::core::constraint::number::exclusive_minimum::ExclusiveMinimum;
 use crate::core::constraint::number::maximum::Maximum;
 use crate::core::constraint::number::minimum::Minimum;
 use crate::core::constraint::Constraint;
-use crate::core::field::FieldEnum;
 use crate::core::field::{Field, FieldType};
 use serde::{Deserialize, Serialize};
 
@@ -35,10 +34,6 @@ impl Field for FloatField {
 
     fn title(&self) -> String {
         self.title.clone()
-    }
-
-    fn into_enum(self) -> FieldEnum {
-        FieldEnum::Float(self)
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
