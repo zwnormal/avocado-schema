@@ -92,8 +92,9 @@ mod tests {
     use crate::core::field::integer::IntegerFieldBuilder;
     use crate::core::field::object::{ObjectField, ObjectFieldBuilder};
     use crate::core::field::string::StringFieldBuilder;
+    use crate::core::value::FieldValue;
     use crate::visitor::validator::Validator;
-    use serde::Serialize;
+    use std::collections::BTreeMap;
 
     #[test]
     fn test_serialize() {
@@ -209,10 +210,17 @@ mod tests {
         let field = ObjectFieldBuilder::new().build();
         let validator = Validator::new(field);
 
-        #[derive(Serialize)]
+        #[derive(Clone)]
         struct Client {
             name: Option<String>,
         }
+
+        impl From<Client> for FieldValue {
+            fn from(value: Client) -> Self {
+                FieldValue::Object(BTreeMap::from([("name".to_string(), value.name.into())]))
+            }
+        }
+
         assert!(validator
             .validate(&Client {
                 name: Some("Robert Li".to_string())
@@ -239,10 +247,17 @@ mod tests {
             .build();
         let validator = Validator::new(field);
 
-        #[derive(Serialize)]
+        #[derive(Clone)]
         struct Client {
             name: Option<String>,
         }
+
+        impl From<Client> for FieldValue {
+            fn from(value: Client) -> Self {
+                FieldValue::Object(BTreeMap::from([("name".to_string(), value.name.into())]))
+            }
+        }
+
         assert!(validator
             .validate(&Client {
                 name: Some("Robert Li".to_string())

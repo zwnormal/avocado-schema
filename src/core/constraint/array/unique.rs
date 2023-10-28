@@ -1,6 +1,6 @@
 use crate::core::constraint::Constraint;
+use crate::core::value::FieldValue;
 use anyhow::anyhow;
-use serde_json::Value;
 
 #[derive(Debug)]
 pub struct Unique {
@@ -8,10 +8,10 @@ pub struct Unique {
 }
 
 impl Constraint for Unique {
-    fn validate(&self, val: &Value) -> anyhow::Result<()> {
+    fn validate(&self, val: &FieldValue) -> anyhow::Result<()> {
         match val {
-            Value::Array(v) if self.unique => {
-                let mut values: Vec<Value> = vec![];
+            FieldValue::Array(v) if self.unique => {
+                let mut values: Vec<FieldValue> = vec![];
                 for value in v {
                     if !values.contains(value) {
                         values.push(value.clone())
@@ -33,23 +33,23 @@ impl Constraint for Unique {
 mod tests {
     use crate::core::constraint::array::unique::Unique;
     use crate::core::constraint::Constraint;
-    use serde_json::{Number, Value};
+    use crate::core::value::FieldValue;
 
     #[test]
     fn test_unique() {
         let constraint = Unique { unique: true };
 
-        let value = Value::Array(vec![
-            Value::Number(Number::from(1)),
-            Value::Number(Number::from(2)),
-            Value::Number(Number::from(3)),
+        let value = FieldValue::Array(vec![
+            FieldValue::Integer(1),
+            FieldValue::Integer(2),
+            FieldValue::Integer(3),
         ]);
         assert!(constraint.validate(&value).is_ok());
 
-        let value = Value::Array(vec![
-            Value::Number(Number::from(1)),
-            Value::Number(Number::from(2)),
-            Value::Number(Number::from(2)),
+        let value = FieldValue::Array(vec![
+            FieldValue::Integer(1),
+            FieldValue::Integer(2),
+            FieldValue::Integer(2),
         ]);
         assert!(constraint.validate(&value).is_err());
     }

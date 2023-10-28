@@ -1,6 +1,6 @@
 use crate::core::constraint::Constraint;
+use crate::core::value::FieldValue;
 use anyhow::{anyhow, Result};
-use serde_json::Value;
 use unicode_segmentation::UnicodeSegmentation;
 
 #[derive(Clone, Debug)]
@@ -9,9 +9,9 @@ pub struct MinLength {
 }
 
 impl Constraint for MinLength {
-    fn validate(&self, val: &Value) -> Result<()> {
+    fn validate(&self, val: &FieldValue) -> Result<()> {
         match val {
-            Value::String(v) if v.graphemes(true).count() < self.min_length => {
+            FieldValue::String(v) if v.graphemes(true).count() < self.min_length => {
                 Err(anyhow!(format!(
                     "length of {} is less then {} ({})",
                     v, self.min_length, "MinLength"
@@ -26,16 +26,16 @@ impl Constraint for MinLength {
 mod tests {
     use crate::core::constraint::string::min_length::MinLength;
     use crate::core::constraint::Constraint;
-    use serde_json::Value;
+    use crate::core::value::FieldValue;
 
     #[test]
     fn test_min_length() {
         let constraint = MinLength { min_length: 8 };
 
-        let value = Value::String("Valid String".to_string());
+        let value = FieldValue::String("Valid String".to_string());
         assert!(constraint.validate(&value).is_ok());
 
-        let value = Value::String("Invalid".to_string());
+        let value = FieldValue::String("Invalid".to_string());
         assert!(constraint.validate(&value).is_err());
     }
 }

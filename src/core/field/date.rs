@@ -61,6 +61,7 @@ impl DateFieldBuilder {
 mod tests {
     use crate::core::field::date::{DateField, DateFieldBuilder};
     use crate::visitor::validator::Validator;
+    use chrono::NaiveDate;
 
     #[test]
     fn test_serialize() {
@@ -92,7 +93,9 @@ mod tests {
         let field = DateFieldBuilder::new().build();
         let validator = Validator::new(field);
 
-        assert!(validator.validate(&"1996-09-19").is_ok());
+        assert!(validator
+            .validate(&NaiveDate::from_ymd_opt(1996, 9, 19))
+            .is_ok());
         assert!(validator.validate(&"meeting").is_err());
     }
 }

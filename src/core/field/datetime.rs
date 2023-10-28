@@ -61,6 +61,7 @@ impl DatetimeFieldBuilder {
 mod tests {
     use crate::core::field::datetime::{DatetimeField, DatetimeFieldBuilder};
     use crate::visitor::validator::Validator;
+    use chrono::Utc;
 
     #[test]
     fn test_serialize() {
@@ -92,7 +93,7 @@ mod tests {
         let field = DatetimeFieldBuilder::new().build();
         let validator = Validator::new(field);
 
-        assert!(validator.validate(&"1996-12-19T16:39:57-08:00").is_ok());
+        assert!(validator.validate(&Utc::now()).is_ok());
         assert!(validator.validate(&"meeting").is_err());
     }
 }

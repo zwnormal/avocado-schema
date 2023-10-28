@@ -61,6 +61,7 @@ impl TimeFieldBuilder {
 mod tests {
     use crate::core::field::time::{TimeField, TimeFieldBuilder};
     use crate::visitor::validator::Validator;
+    use chrono::NaiveTime;
 
     #[test]
     fn test_serialize() {
@@ -92,7 +93,9 @@ mod tests {
         let field = TimeFieldBuilder::new().build();
         let validator = Validator::new(field);
 
-        assert!(validator.validate(&"23:56:04").is_ok());
+        assert!(validator
+            .validate(&NaiveTime::from_hms_opt(23, 56, 4))
+            .is_ok());
         assert!(validator.validate(&"meeting").is_err());
     }
 }

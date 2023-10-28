@@ -1,9 +1,9 @@
 use crate::core::constraint::Constraint;
+use crate::core::value::FieldValue;
 use anyhow::{anyhow, Result};
 use regex::Regex;
 use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use serde_json::Value;
 use std::fmt::Formatter;
 
 #[derive(Clone, Debug)]
@@ -51,9 +51,9 @@ impl<'de> Visitor<'de> for PatternVisitor {
 }
 
 impl Constraint for Pattern {
-    fn validate(&self, val: &Value) -> Result<()> {
+    fn validate(&self, val: &FieldValue) -> Result<()> {
         match val {
-            Value::String(v) if !self.pattern.is_match(v.as_str()) => Err(anyhow!(format!(
+            FieldValue::String(v) if !self.pattern.is_match(v.as_str()) => Err(anyhow!(format!(
                 "{} does not match pattern {} ({})",
                 self.pattern, v, "Pattern"
             ))),
@@ -66,7 +66,7 @@ impl Constraint for Pattern {
 mod tests {
     use crate::core::constraint::string::pattern::Pattern;
     use crate::core::constraint::Constraint;
-    use serde_json::Value;
+    use crate::core::value::FieldValue;
 
     #[test]
     fn test_pattern() {
@@ -74,10 +74,10 @@ mod tests {
             pattern: r"^\d{4}-\d{2}-\d{2}$".parse().unwrap(),
         };
 
-        let value = Value::String("2010-03-14".to_string());
+        let value = FieldValue::String("2010-03-14".to_string());
         assert!(constraint.validate(&value).is_ok());
 
-        let value = Value::String("Not Match".to_string());
+        let value = FieldValue::String("Not Match".to_string());
         assert!(constraint.validate(&value).is_err());
     }
 }

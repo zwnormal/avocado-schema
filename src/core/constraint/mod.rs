@@ -1,8 +1,8 @@
+use crate::core::value::FieldValue;
 use anyhow::Result;
-use serde_json::Value;
 
 pub trait Constraint {
-    fn validate(&self, val: &Value) -> Result<()>;
+    fn validate(&self, val: &FieldValue) -> Result<()>;
 }
 
 pub mod array;

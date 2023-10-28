@@ -1,6 +1,6 @@
 use crate::core::constraint::Constraint;
+use crate::core::value::FieldValue;
 use anyhow::{anyhow, Result};
-use serde_json::Value;
 
 #[derive(Clone, Debug)]
 pub struct Enumeration {
@@ -8,9 +8,9 @@ pub struct Enumeration {
 }
 
 impl Constraint for Enumeration {
-    fn validate(&self, val: &Value) -> Result<()> {
+    fn validate(&self, val: &FieldValue) -> Result<()> {
         match val {
-            Value::String(v) if !self.values.contains(v) => Err(anyhow!(format!(
+            FieldValue::String(v) if !self.values.contains(v) => Err(anyhow!(format!(
                 "value {} is not valid value ({})",
                 v, "Enum of String"
             ))),
@@ -23,7 +23,7 @@ impl Constraint for Enumeration {
 mod tests {
     use crate::core::constraint::string::enumeration::Enumeration;
     use crate::core::constraint::Constraint;
-    use serde_json::Value;
+    use crate::core::value::FieldValue;
 
     #[test]
     fn test_enumeration() {
@@ -31,10 +31,10 @@ mod tests {
             values: vec!["China".to_string(), "Australia".to_string()],
         };
 
-        let value = Value::String("China".to_string());
+        let value = FieldValue::String("China".to_string());
         assert!(constraint.validate(&value).is_ok());
 
-        let value = Value::String("United States".to_string());
+        let value = FieldValue::String("United States".to_string());
         assert!(constraint.validate(&value).is_err());
     }
 }

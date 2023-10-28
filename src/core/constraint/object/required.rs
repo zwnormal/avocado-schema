@@ -1,6 +1,6 @@
 use crate::core::constraint::Constraint;
+use crate::core::value::FieldValue;
 use anyhow::{anyhow, Result};
-use serde_json::Value;
 
 #[derive(Clone, Debug)]
 pub struct Required {
@@ -8,16 +8,16 @@ pub struct Required {
 }
 
 impl Constraint for Required {
-    fn validate(&self, val: &Value) -> Result<()> {
+    fn validate(&self, val: &FieldValue) -> Result<()> {
         match val {
-            Value::Object(o) => {
+            FieldValue::Object(o) => {
                 let mut missing_fields = vec![];
                 for field in &self.required {
                     match o.get(field.as_str()) {
                         None => {
                             missing_fields.push(field.clone());
                         }
-                        Some(&Value::Null) => {
+                        Some(&FieldValue::Null) => {
                             missing_fields.push(field.clone());
                         }
                         _ => {}
@@ -43,28 +43,37 @@ impl Constraint for Required {
 mod test {
     use crate::core::constraint::object::required::Required;
     use crate::core::constraint::Constraint;
-    use serde::Serialize;
+    use crate::core::value::FieldValue;
+    use std::collections::BTreeMap;
 
     #[test]
     fn test_required() {
-        #[derive(Serialize)]
+        #[derive(Clone)]
         struct Document {
             title: String,
         }
 
-        let document = serde_json::to_value(Document {
+        impl From<Document> for FieldValue {
+            fn from(value: Document) -> Self {
+                FieldValue::Object(BTreeMap::from([(
+                    "title".to_string(),
+                    FieldValue::String(value.title),
+                )]))
+            }
+        }
+
+        let document = Document {
             title: "Document Title".to_string(),
-        })
-        .expect("failed to serialise document");
+        };
 
         let constraint = Required {
             required: vec!["title".to_string()],
         };
-        assert!(constraint.validate(&document).is_ok());
+        assert!(constraint.validate(&document.clone().into()).is_ok());
 
         let constraint = Required {
             required: vec!["title".to_string(), "body".to_string()],
         };
-        assert!(constraint.validate(&document).is_err());
+        assert!(constraint.validate(&document.into()).is_err());
     }
 }

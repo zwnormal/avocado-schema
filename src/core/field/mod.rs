@@ -9,6 +9,7 @@ use crate::core::field::integer::IntegerField;
 use crate::core::field::object::ObjectField;
 use crate::core::field::string::StringField;
 use crate::core::field::time::TimeField;
+use crate::core::field::uinteger::UIntegerField;
 use serde::{Deserialize, Serialize, Serializer};
 use std::fmt;
 use std::fmt::{Debug, Formatter};
@@ -17,6 +18,7 @@ use std::fmt::{Debug, Formatter};
 pub enum FieldType {
     String,
     Integer,
+    UInteger,
     Float,
     Boolean,
     Object,
@@ -32,6 +34,7 @@ impl fmt::Display for FieldType {
         match self {
             FieldType::String => write!(f, "string"),
             FieldType::Integer => write!(f, "integer"),
+            FieldType::UInteger => write!(f, "unsigned integer"),
             FieldType::Float => write!(f, "float"),
             FieldType::Boolean => write!(f, "boolean"),
             FieldType::Array => write!(f, "array"),
@@ -62,6 +65,7 @@ pub mod integer;
 pub mod object;
 pub mod string;
 pub mod time;
+pub mod uinteger;
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
@@ -70,6 +74,7 @@ pub enum FieldEnum {
     Boolean(BooleanField),
     Float(FloatField),
     Integer(IntegerField),
+    UInteger(UIntegerField),
     Object(ObjectField),
     String(StringField),
     Email(EmailField),
@@ -88,6 +93,7 @@ impl Serialize for FieldEnum {
             FieldEnum::Boolean(f) => f.serialize(serializer),
             FieldEnum::Float(f) => f.serialize(serializer),
             FieldEnum::Integer(f) => f.serialize(serializer),
+            FieldEnum::UInteger(f) => f.serialize(serializer),
             FieldEnum::Object(f) => f.serialize(serializer),
             FieldEnum::String(f) => f.serialize(serializer),
             FieldEnum::Email(f) => f.serialize(serializer),
@@ -137,6 +143,12 @@ impl From<FloatField> for FieldEnum {
 impl From<IntegerField> for FieldEnum {
     fn from(value: IntegerField) -> Self {
         FieldEnum::Integer(value)
+    }
+}
+
+impl From<UIntegerField> for FieldEnum {
+    fn from(value: UIntegerField) -> Self {
+        FieldEnum::UInteger(value)
     }
 }
 

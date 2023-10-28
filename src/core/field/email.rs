@@ -61,6 +61,7 @@ impl EmailFieldBuilder {
 mod tests {
     use crate::core::field::email::{EmailField, EmailFieldBuilder};
     use crate::visitor::validator::Validator;
+    use email_address_parser::EmailAddress;
 
     #[test]
     fn test_serialize() {
@@ -87,12 +88,17 @@ mod tests {
         assert_eq!(field.name, "email");
         assert_eq!(field.title, "Email");
     }
+
     #[test]
     fn test_type() {
         let field = EmailFieldBuilder::new().build();
         let validator = Validator::new(field);
 
-        assert!(validator.validate(&"admin@avocado.com").is_ok());
-        assert!(validator.validate(&"meeting").is_err());
+        assert!(validator
+            .validate(&EmailAddress::parse("admin@avocado.com", None))
+            .is_ok());
+        assert!(validator
+            .validate(&EmailAddress::parse("meeting", None))
+            .is_err());
     }
 }
