@@ -122,3 +122,110 @@ impl UIntegerFieldBuilder {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::core::field::uinteger::{UIntegerField, UIntegerFieldBuilder};
+    use crate::visitor::validator::Validator;
+
+    #[test]
+    fn test_serialize() {
+        let field = UIntegerFieldBuilder::new()
+            .name("age")
+            .title("Age")
+            .enumeration(vec![50, 100])
+            .maximum(100)
+            .exclusive_maximum(101)
+            .minimum(1)
+            .exclusive_minimum(0)
+            .build();
+        let field_json = serde_json::to_string(&field).unwrap();
+        assert_eq!(
+            field_json,
+            r#"{"type":"uinteger","name":"age","title":"Age","enum":[50,100],"maximum":100,"exclusiveMaximum":101,"minimum":1,"exclusiveMinimum":0}"#
+        );
+    }
+
+    #[test]
+    fn test_deserialize() {
+        let field_json = r#"
+        {
+            "type":"uinteger",
+            "name": "age",
+            "title": "Age",
+            "enum": [50, 100],
+            "maximum": 100,
+            "exclusiveMaximum": 101,
+            "minimum": 1,
+            "exclusiveMinimum": 0
+        }"#;
+        let field: UIntegerField = serde_json::from_str(field_json).unwrap();
+        assert_eq!(field.name, "age");
+        assert_eq!(field.title, "Age");
+        assert_eq!(field.enumeration.unwrap(), vec![50, 100]);
+        assert_eq!(field.maximum.unwrap(), 100);
+        assert_eq!(field.exclusive_maximum.unwrap(), 101);
+        assert_eq!(field.minimum.unwrap(), 1);
+        assert_eq!(field.exclusive_minimum.unwrap(), 0);
+    }
+
+    #[test]
+    fn test_type() {
+        let field = UIntegerFieldBuilder::new().build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&10u64).is_ok());
+        assert!(validator.validate(&"meeting").is_err());
+    }
+
+    #[test]
+    fn test_enumeration() {
+        let field = UIntegerFieldBuilder::new()
+            .enumeration(vec![50, 100])
+            .build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&50u64).is_ok());
+        assert!(validator.validate(&30u64).is_err());
+    }
+
+    #[test]
+    fn test_maximum() {
+        let field = UIntegerFieldBuilder::new().maximum(100).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&99u64).is_ok());
+        assert!(validator.validate(&100u64).is_ok());
+        assert!(validator.validate(&101u64).is_err());
+    }
+
+    #[test]
+    fn test_exclusive_maximum() {
+        let field = UIntegerFieldBuilder::new().exclusive_maximum(100).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&99u64).is_ok());
+        assert!(validator.validate(&100u64).is_err());
+        assert!(validator.validate(&101u64).is_err());
+    }
+
+    #[test]
+    fn test_minimum() {
+        let field = UIntegerFieldBuilder::new().minimum(1).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&2u64).is_ok());
+        assert!(validator.validate(&1u64).is_ok());
+        assert!(validator.validate(&0u64).is_err())
+    }
+
+    #[test]
+    fn test_exclusive_minimum() {
+        let field = UIntegerFieldBuilder::new().exclusive_minimum(1).build();
+        let validator = Validator::new(field);
+
+        assert!(validator.validate(&2u64).is_ok());
+        assert!(validator.validate(&1u64).is_err());
+        assert!(validator.validate(&0u64).is_err())
+    }
+}
