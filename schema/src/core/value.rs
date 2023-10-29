@@ -1,5 +1,6 @@
 use chrono::{DateTime, NaiveDate, NaiveTime, TimeZone, Utc};
 use email_address_parser::EmailAddress;
+use secrecy::{ExposeSecret, Secret, Zeroize};
 use std::collections::BTreeMap;
 use std::fmt::{Display, Formatter};
 
@@ -141,6 +142,12 @@ impl Reflect for NaiveDate {
 impl Reflect for NaiveTime {
     fn field_value(&self) -> FieldValue {
         FieldValue::Time(self.clone())
+    }
+}
+
+impl<T: Reflect + Zeroize> Reflect for Secret<T> {
+    fn field_value(&self) -> FieldValue {
+        self.expose_secret().field_value()
     }
 }
 
