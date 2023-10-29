@@ -2,7 +2,7 @@ use crate::core::field::array::ArrayField;
 use crate::core::field::object::ObjectField;
 use crate::core::field::Field;
 use crate::core::field::FieldEnum;
-use crate::core::value::FieldValue;
+use crate::core::value::{FieldValue, Reflect};
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
@@ -111,10 +111,10 @@ impl Validator {
 
     pub fn validate(
         &self,
-        value: &(impl Into<FieldValue> + Clone),
+        value: &impl Reflect,
     ) -> Result<(), HashMap<String, Vec<ValidationError>>> {
         let mut state = State {
-            value: value.clone().into(),
+            value: value.field_value(),
             field_names: vec![],
             errors: Default::default(),
         };
@@ -131,25 +131,24 @@ impl Validator {
 #[cfg(test)]
 mod tests {
     use crate::core::field::object::ObjectField;
-    use crate::core::value::FieldValue;
+    use crate::core::value::{FieldValue, Reflect};
     use crate::visitor::validator::Validator;
     use std::collections::BTreeMap;
 
     #[test]
     fn test_validate() {
-        #[derive(Clone)]
         struct Client {
             first_name: String,
             last_name: String,
             age: u64,
         }
 
-        impl From<Client> for FieldValue {
-            fn from(value: Client) -> Self {
+        impl Reflect for Client {
+            fn field_value(&self) -> FieldValue {
                 FieldValue::Object(BTreeMap::from([
-                    ("first_name".to_string(), value.first_name.into()),
-                    ("last_name".to_string(), value.last_name.into()),
-                    ("age".to_string(), value.age.into()),
+                    ("first_name".to_string(), self.first_name.field_value()),
+                    ("last_name".to_string(), self.last_name.field_value()),
+                    ("age".to_string(), self.age.field_value()),
                 ]))
             }
         }

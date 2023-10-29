@@ -43,21 +43,20 @@ impl Constraint for Required {
 mod test {
     use crate::core::constraint::object::required::Required;
     use crate::core::constraint::Constraint;
-    use crate::core::value::FieldValue;
+    use crate::core::value::{FieldValue, Reflect};
     use std::collections::BTreeMap;
 
     #[test]
     fn test_required() {
-        #[derive(Clone)]
         struct Document {
             title: String,
         }
 
-        impl From<Document> for FieldValue {
-            fn from(value: Document) -> Self {
+        impl Reflect for Document {
+            fn field_value(&self) -> FieldValue {
                 FieldValue::Object(BTreeMap::from([(
                     "title".to_string(),
-                    FieldValue::String(value.title),
+                    self.title.field_value(),
                 )]))
             }
         }
@@ -69,11 +68,11 @@ mod test {
         let constraint = Required {
             required: vec!["title".to_string()],
         };
-        assert!(constraint.validate(&document.clone().into()).is_ok());
+        assert!(constraint.validate(&document.field_value()).is_ok());
 
         let constraint = Required {
             required: vec!["title".to_string(), "body".to_string()],
         };
-        assert!(constraint.validate(&document.into()).is_err());
+        assert!(constraint.validate(&document.field_value()).is_err());
     }
 }

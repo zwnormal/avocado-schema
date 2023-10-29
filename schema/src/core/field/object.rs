@@ -92,7 +92,7 @@ mod tests {
     use crate::core::field::integer::IntegerFieldBuilder;
     use crate::core::field::object::{ObjectField, ObjectFieldBuilder};
     use crate::core::field::string::StringFieldBuilder;
-    use crate::core::value::FieldValue;
+    use crate::core::value::{FieldValue, Reflect};
     use crate::visitor::validator::Validator;
     use std::collections::BTreeMap;
 
@@ -210,14 +210,16 @@ mod tests {
         let field = ObjectFieldBuilder::new().build();
         let validator = Validator::new(field);
 
-        #[derive(Clone)]
         struct Client {
             name: Option<String>,
         }
 
-        impl From<Client> for FieldValue {
-            fn from(value: Client) -> Self {
-                FieldValue::Object(BTreeMap::from([("name".to_string(), value.name.into())]))
+        impl Reflect for Client {
+            fn field_value(&self) -> FieldValue {
+                FieldValue::Object(BTreeMap::from([(
+                    "name".to_string(),
+                    self.name.field_value(),
+                )]))
             }
         }
 
@@ -247,14 +249,16 @@ mod tests {
             .build();
         let validator = Validator::new(field);
 
-        #[derive(Clone)]
         struct Client {
             name: Option<String>,
         }
 
-        impl From<Client> for FieldValue {
-            fn from(value: Client) -> Self {
-                FieldValue::Object(BTreeMap::from([("name".to_string(), value.name.into())]))
+        impl Reflect for Client {
+            fn field_value(&self) -> FieldValue {
+                FieldValue::Object(BTreeMap::from([(
+                    "name".to_string(),
+                    self.name.field_value(),
+                )]))
             }
         }
 

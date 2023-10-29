@@ -38,119 +38,123 @@ impl Display for FieldValue {
     }
 }
 
-impl From<i8> for FieldValue {
-    fn from(value: i8) -> Self {
-        FieldValue::Integer(value as i64)
+pub trait Reflect {
+    fn field_value(&self) -> FieldValue;
+}
+
+impl Reflect for i8 {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::Integer(*self as i64)
     }
 }
 
-impl From<i16> for FieldValue {
-    fn from(value: i16) -> Self {
-        FieldValue::Integer(value as i64)
+impl Reflect for i16 {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::Integer(*self as i64)
     }
 }
 
-impl From<i32> for FieldValue {
-    fn from(value: i32) -> Self {
-        FieldValue::Integer(value as i64)
+impl Reflect for i32 {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::Integer(*self as i64)
     }
 }
 
-impl From<i64> for FieldValue {
-    fn from(value: i64) -> Self {
-        FieldValue::Integer(value)
+impl Reflect for i64 {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::Integer(*self)
     }
 }
 
-impl From<u8> for FieldValue {
-    fn from(value: u8) -> Self {
-        FieldValue::UInteger(value as u64)
+impl Reflect for u8 {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::UInteger(*self as u64)
     }
 }
 
-impl From<u16> for FieldValue {
-    fn from(value: u16) -> Self {
-        FieldValue::UInteger(value as u64)
+impl Reflect for u16 {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::UInteger(*self as u64)
     }
 }
 
-impl From<u32> for FieldValue {
-    fn from(value: u32) -> Self {
-        FieldValue::UInteger(value as u64)
+impl Reflect for u32 {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::UInteger(*self as u64)
     }
 }
 
-impl From<u64> for FieldValue {
-    fn from(value: u64) -> Self {
-        FieldValue::UInteger(value)
+impl Reflect for u64 {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::UInteger(*self)
     }
 }
 
-impl From<f32> for FieldValue {
-    fn from(value: f32) -> Self {
-        FieldValue::Float(value as f64)
+impl Reflect for f32 {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::Float(*self as f64)
     }
 }
 
-impl From<f64> for FieldValue {
-    fn from(value: f64) -> Self {
-        FieldValue::Float(value)
+impl Reflect for f64 {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::Float(*self)
     }
 }
 
-impl From<bool> for FieldValue {
-    fn from(value: bool) -> Self {
-        FieldValue::Boolean(value)
+impl Reflect for bool {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::Boolean(*self)
     }
 }
 
-impl From<&'static str> for FieldValue {
-    fn from(value: &'static str) -> Self {
-        FieldValue::String(value.to_string())
+impl Reflect for &'static str {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::String(self.to_string())
     }
 }
 
-impl From<String> for FieldValue {
-    fn from(value: String) -> Self {
-        FieldValue::String(value)
+impl Reflect for String {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::String(self.clone())
     }
 }
 
-impl From<EmailAddress> for FieldValue {
-    fn from(value: EmailAddress) -> Self {
-        FieldValue::Email(value)
+impl Reflect for EmailAddress {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::Email(self.clone())
     }
 }
 
-impl<Tz: TimeZone> From<DateTime<Tz>> for FieldValue {
-    fn from(value: DateTime<Tz>) -> Self {
-        FieldValue::DateTime(value.with_timezone(&Utc))
+impl<Tz: TimeZone> Reflect for DateTime<Tz> {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::DateTime(self.with_timezone(&Utc))
     }
 }
 
-impl From<NaiveDate> for FieldValue {
-    fn from(value: NaiveDate) -> Self {
-        FieldValue::Date(value)
+impl Reflect for NaiveDate {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::Date(self.clone())
     }
 }
 
-impl From<NaiveTime> for FieldValue {
-    fn from(value: NaiveTime) -> Self {
-        FieldValue::Time(value)
+impl Reflect for NaiveTime {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::Time(self.clone())
     }
 }
 
-impl<T: Into<FieldValue>> From<Option<T>> for FieldValue {
-    fn from(value: Option<T>) -> Self {
-        match value {
+impl<T: Reflect> Reflect for Option<T> {
+    fn field_value(&self) -> FieldValue {
+        match self {
             None => FieldValue::Null,
-            Some(v) => v.into(),
+            Some(v) => v.field_value(),
         }
     }
 }
 
-impl<T: Into<FieldValue>> From<Vec<T>> for FieldValue {
-    fn from(value: Vec<T>) -> Self {
-        FieldValue::Array(value.into_iter().map(|v| v.into()).collect())
+impl<T: Reflect> Reflect for Vec<T> {
+    fn field_value(&self) -> FieldValue {
+        FieldValue::Array(self.into_iter().map(|v| v.field_value()).collect())
     }
 }

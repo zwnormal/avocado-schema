@@ -6,7 +6,7 @@ Inspired by the JSON schema, the main purpose of Avocado Schema is to avoid defi
 [![MIT licensed][mit-badge]][mit-url]
 [![codecov][codecov-badge]][codecov-url]
 
-[crates-badge]: https://img.shields.io/badge/crates-0.5.2-blue
+[crates-badge]: https://img.shields.io/badge/crates-0.6.0-blue
 [crates-url]: https://crates.io/crates/avocado-schema
 [mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [mit-url]: https://github.com/zwnormal/avocado-schema/blob/main/LICENSE
@@ -15,7 +15,7 @@ Inspired by the JSON schema, the main purpose of Avocado Schema is to avoid defi
 
 ## How to use
 
-The src/core/value.rs defines an `FieldValue` enum to implement the reflection of struct value, so any struct that requires to be validated against the schema needs to implement the `from` trait for the `FieldValue`. Several useful implementation has been already included in the file.
+The src/core/value.rs defines an `FieldValue` enum to implement the reflection of struct value, so any struct that requires to be validated against the schema needs to implement the `Reflect` trait. Several useful implementation has been already included in the file.
 
 Please refer to the sources/tests code for both how to write a visitor and how to validate data by the schema.
 
