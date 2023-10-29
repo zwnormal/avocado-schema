@@ -67,9 +67,36 @@ pub mod string;
 pub mod time;
 pub mod uinteger;
 
-#[derive(Debug, Deserialize)]
-#[serde(tag = "type", rename_all = "lowercase")]
-pub enum FieldEnum {
+macro_rules! field_enum {
+    ($($field_name:ident($field:ident)),*) => {
+        #[derive(Debug, Deserialize)]
+        #[serde(tag = "type", rename_all = "lowercase")]
+        pub enum FieldEnum { $(
+            $field_name($field),
+        )*}
+
+        impl Serialize for FieldEnum {
+            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+            where
+                S: Serializer,
+            {
+                match &self {
+                    $(FieldEnum::$field_name(f) => f.serialize(serializer),)*
+                }
+            }
+        }
+
+        $(
+        impl From<$field> for FieldEnum {
+            fn from(value: $field) -> Self {
+                FieldEnum::$field_name(value)
+            }
+        }
+        )*
+    }
+}
+
+field_enum!(
     Array(ArrayField),
     Boolean(BooleanField),
     Float(FloatField),
@@ -80,92 +107,5 @@ pub enum FieldEnum {
     Email(EmailField),
     Datetime(DatetimeField),
     Date(DateField),
-    Time(TimeField),
-}
-
-impl Serialize for FieldEnum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        match self {
-            FieldEnum::Array(f) => f.serialize(serializer),
-            FieldEnum::Boolean(f) => f.serialize(serializer),
-            FieldEnum::Float(f) => f.serialize(serializer),
-            FieldEnum::Integer(f) => f.serialize(serializer),
-            FieldEnum::UInteger(f) => f.serialize(serializer),
-            FieldEnum::Object(f) => f.serialize(serializer),
-            FieldEnum::String(f) => f.serialize(serializer),
-            FieldEnum::Email(f) => f.serialize(serializer),
-            FieldEnum::Datetime(f) => f.serialize(serializer),
-            FieldEnum::Date(f) => f.serialize(serializer),
-            FieldEnum::Time(f) => f.serialize(serializer),
-        }
-    }
-}
-
-impl From<ArrayField> for FieldEnum {
-    fn from(value: ArrayField) -> Self {
-        FieldEnum::Array(value)
-    }
-}
-
-impl From<BooleanField> for FieldEnum {
-    fn from(value: BooleanField) -> Self {
-        FieldEnum::Boolean(value)
-    }
-}
-
-impl From<DateField> for FieldEnum {
-    fn from(value: DateField) -> Self {
-        FieldEnum::Date(value)
-    }
-}
-
-impl From<DatetimeField> for FieldEnum {
-    fn from(value: DatetimeField) -> Self {
-        FieldEnum::Datetime(value)
-    }
-}
-
-impl From<EmailField> for FieldEnum {
-    fn from(value: EmailField) -> Self {
-        FieldEnum::Email(value)
-    }
-}
-
-impl From<FloatField> for FieldEnum {
-    fn from(value: FloatField) -> Self {
-        FieldEnum::Float(value)
-    }
-}
-
-impl From<IntegerField> for FieldEnum {
-    fn from(value: IntegerField) -> Self {
-        FieldEnum::Integer(value)
-    }
-}
-
-impl From<UIntegerField> for FieldEnum {
-    fn from(value: UIntegerField) -> Self {
-        FieldEnum::UInteger(value)
-    }
-}
-
-impl From<ObjectField> for FieldEnum {
-    fn from(value: ObjectField) -> Self {
-        FieldEnum::Object(value)
-    }
-}
-
-impl From<StringField> for FieldEnum {
-    fn from(value: StringField) -> Self {
-        FieldEnum::String(value)
-    }
-}
-
-impl From<TimeField> for FieldEnum {
-    fn from(value: TimeField) -> Self {
-        FieldEnum::Time(value)
-    }
-}
+    Time(TimeField)
+);
