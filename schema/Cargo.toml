@@ -1,0 +1,21 @@
+[package]
+name = "avocado-schema"
+version = "0.5.1"
+edition = "2021"
+license = "MIT"
+description = "A schema DSL which can be interpreted to implement multiple purposes"
+repository = "https://github.com/zwnormal/avocado-schema/"
+readme = "README.md"
+keywords = ["schema"]
+
+[dependencies]
+uuid = { version = "1.4", features = ["v4", "fast-rng", "macro-diagnostics"]}
+unicode-segmentation = "1.10.1"
+regex = { version = "1.9.5", features = [] }
+thiserror = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+email-address-parser = "2.0.0"
+chrono = "0.4.31"
+chrono-tz = "0.8.3"
