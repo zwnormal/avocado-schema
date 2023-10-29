@@ -1,5 +1,5 @@
 [package]
-name = "avocado_schema_derive"
+name = "avocado-schema-derive"
 version = "0.1.0"
 edition = "2021"
 publish = false
