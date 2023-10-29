@@ -6,6 +6,7 @@ license = "MIT"
 description = "A schema DSL which can be interpreted to implement multiple purposes"
 repository = "https://github.com/zwnormal/avocado-schema/"
 readme = "../README.md"
+publish = true
 keywords = ["schema"]
 
 [dependencies]
