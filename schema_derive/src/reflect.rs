@@ -70,8 +70,11 @@ pub(crate) mod reflect {
 
     fn builder_attr_error<T: quote::ToTokens>(tokens: T) -> Option<proc_macro2::TokenStream> {
         Some(
-            syn::Error::new_spanned(tokens, "expected `reflect(name = \"...\")`")
-                .to_compile_error(),
+            syn::Error::new_spanned(
+                tokens,
+                "expected `reflect(name = \"...\")` or `reflect(ignore)`",
+            )
+            .to_compile_error(),
         )
     }
 }
