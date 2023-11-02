@@ -10,3 +10,8 @@ proc-macro = true
 [dependencies]
 syn = "2.0.38"
 quote = "1.0"
+avocado-schema = { path = "../schema" }
+
+[[test]]
+name = "tests"
+path = "tests/reflect.rs"

@@ -16,9 +16,9 @@ pub(crate) mod reflect {
         });
 
         let gen = quote! {
-            impl Reflect for #struct_ident {
-                fn field_value(&self) -> FieldValue {
-                    FieldValue::Object(::std::collections::BTreeMap::from([
+            impl ::avocado_schema::core::value::Reflect for #struct_ident {
+                fn field_value(&self) -> ::avocado_schema::core::value::FieldValue {
+                    ::avocado_schema::core::value::FieldValue::Object(::std::collections::BTreeMap::from([
                         #(#field_values),*
                     ]))
                 }
