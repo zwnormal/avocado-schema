@@ -4,7 +4,7 @@ pub(crate) mod reflect {
     use syn;
     use syn::punctuated::Punctuated;
     use syn::token::Comma;
-    use syn::{Data, Expr, Field, Fields, Meta, Token};
+    use syn::{Data, Expr, Field, Fields};
 
     pub(crate) fn impl_reflect_macro(ast: syn::DeriveInput) -> TokenStream {
         let struct_ident = ast.ident;
@@ -15,28 +15,18 @@ pub(crate) mod reflect {
         let field_values = struct_fields.iter().map(|field| {
             let field_name = &field.ident;
             if let Some(field_attr) = get_reflect_attr(field) {
-                let args = field_attr
-                    .parse_args_with(Punctuated::<Meta, Token![=]>::parse_terminated)
-                    .map_err(|_| builder_attr_error(field_attr)).ok()?;
-                if args.len() != 1 {
-                    builder_attr_error(args)
-                } else {
-                    match &args[0] {
-                        Meta::NameValue(name_value) if name_value.path.is_ident("name") => {
-                            match &name_value.value {
-                                Expr::Lit(syn::ExprLit {
-                                    attrs: _,
-                                    lit: syn::Lit::Str(val),
-                                }) => {
-                                    let custom_name =
-                                        format_ident!("{}", val.value(), span = val.span());
-                                    Some(quote!((stringify!(#custom_name).to_string(), self.#field_name.field_value())))
-                                }
-                                _ => builder_attr_error(field_attr),
-                            }
-                        }
-                        _ => builder_attr_error(field_attr),
-                    }
+                let arg: Expr = field_attr.parse_args().map_err(|_| builder_attr_error(field_attr)).ok()?;
+                match arg {
+                    Expr::Path(p) if p.path.is_ident("ignore") => None,
+                    Expr::Lit(syn::ExprLit {
+                                  attrs: _,
+                                  lit: syn::Lit::Str(val),
+                              }) => {
+                        let custom_name =
+                            format_ident!("{}", val.value(), span = val.span());
+                        Some(quote!((stringify!(#custom_name).to_string(), self.#field_name.field_value())))
+                    },
+                    _ => builder_attr_error(field_attr),
                 }
             } else {
                 Some(quote!((stringify!(#field_name).to_string(), self.#field_name.field_value())))

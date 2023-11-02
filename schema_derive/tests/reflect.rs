@@ -2,13 +2,16 @@ use avocado_schema::core::value::{FieldValue, Reflect};
 use avocado_schema_derive::Reflect;
 use std::collections::BTreeMap;
 
+#[allow(dead_code)]
 #[derive(Reflect)]
 struct Client {
-    #[reflect(name = "firstName")]
+    #[reflect("firstName")]
     first_name: String,
-    #[reflect(name = "lastName")]
+    #[reflect("lastName")]
     last_name: String,
     age: u64,
+    #[reflect(ignore)]
+    email: String,
 }
 
 #[test]
@@ -17,6 +20,7 @@ fn main() {
         first_name: "Robert".to_string(),
         last_name: "Li".to_string(),
         age: 30,
+        email: "admin@avocado.com".to_string(),
     };
     assert_eq!(
         client.field_value(),
