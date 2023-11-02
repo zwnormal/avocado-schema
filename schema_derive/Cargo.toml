@@ -1,8 +1,13 @@
 [package]
 name = "avocado-schema-derive"
-version = "0.1.0"
+version = "0.6.2"
 edition = "2021"
-publish = false
+license = "MIT"
+description = "A derive macro to support runtime reflection of struct values"
+repository = "https://github.com/zwnormal/avocado-schema/"
+readme = "README.md"
+publish = true
+keywords = ["derive", "reflect", "reflection"]
 
 [lib]
 proc-macro = true

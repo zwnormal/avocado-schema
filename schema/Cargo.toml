@@ -1,13 +1,13 @@
 [package]
 name = "avocado-schema"
-version = "0.6.1"
+version = "0.6.2"
 edition = "2021"
 license = "MIT"
 description = "A schema DSL which can be interpreted to implement multiple purposes"
 repository = "https://github.com/zwnormal/avocado-schema/"
 readme = "README.md"
 publish = true
-keywords = ["schema"]
+keywords = ["schema", "validation", "reflect", "reflection"]
 
 [dependencies]
 uuid = { version = "1.4", features = ["v4", "fast-rng", "macro-diagnostics"]}
