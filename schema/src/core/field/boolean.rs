@@ -39,9 +39,7 @@ impl BooleanFieldBuilder {
     }
 
     pub fn build(self) -> BooleanField {
-        BooleanField {
-            name: self.name,
-        }
+        BooleanField { name: self.name }
     }
 }
 
@@ -52,14 +50,9 @@ mod tests {
 
     #[test]
     fn test_serialize() {
-        let field = BooleanFieldBuilder::new()
-            .name("married")
-            .build();
+        let field = BooleanFieldBuilder::new().name("married").build();
         let field_json = serde_json::to_string(&field).unwrap();
-        assert_eq!(
-            field_json,
-            r#"{"type":"boolean","name":"married"}"#
-        )
+        assert_eq!(field_json, r#"{"type":"boolean","name":"married"}"#)
     }
 
     #[test]

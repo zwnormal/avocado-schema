@@ -39,9 +39,7 @@ impl DateFieldBuilder {
     }
 
     pub fn build(self) -> DateField {
-        DateField {
-            name: self.name,
-        }
+        DateField { name: self.name }
     }
 }
 
@@ -53,14 +51,9 @@ mod tests {
 
     #[test]
     fn test_serialize() {
-        let field = DateFieldBuilder::new()
-            .name("modified")
-            .build();
+        let field = DateFieldBuilder::new().name("modified").build();
         let field_json = serde_json::to_string(&field).unwrap();
-        assert_eq!(
-            field_json,
-            r#"{"type":"date","name":"modified"}"#
-        )
+        assert_eq!(field_json, r#"{"type":"date","name":"modified"}"#)
     }
 
     #[test]

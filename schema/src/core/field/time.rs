@@ -39,9 +39,7 @@ impl TimeFieldBuilder {
     }
 
     pub fn build(self) -> TimeField {
-        TimeField {
-            name: self.name,
-        }
+        TimeField { name: self.name }
     }
 }
 
@@ -53,14 +51,9 @@ mod tests {
 
     #[test]
     fn test_serialize() {
-        let field = TimeFieldBuilder::new()
-            .name("modified")
-            .build();
+        let field = TimeFieldBuilder::new().name("modified").build();
         let field_json = serde_json::to_string(&field).unwrap();
-        assert_eq!(
-            field_json,
-            r#"{"type":"time","name":"modified"}"#
-        )
+        assert_eq!(field_json, r#"{"type":"time","name":"modified"}"#)
     }
 
     #[test]

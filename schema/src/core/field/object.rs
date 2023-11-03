@@ -112,23 +112,14 @@ mod tests {
                     .minimum(1)
                     .build(),
             )
-            .property(
-                "stars",
-                FloatFieldBuilder::new()
-                    .name("stars")
-                    .build(),
-            )
+            .property("stars", FloatFieldBuilder::new().name("stars").build())
             .property(
                 "married",
-                BooleanFieldBuilder::new()
-                    .name("married")
-                    .build(),
+                BooleanFieldBuilder::new().name("married").build(),
             )
             .property(
                 "categories",
-                ArrayFieldBuilder::new()
-                    .name("categories")
-                    .build(),
+                ArrayFieldBuilder::new().name("categories").build(),
             )
             .build();
         serde_json::to_string(&field).unwrap();

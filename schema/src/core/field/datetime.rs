@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "datetime")]
 pub struct DatetimeField {
-    pub name: String
+    pub name: String,
 }
 
 impl Field for DatetimeField {
@@ -39,9 +39,7 @@ impl DatetimeFieldBuilder {
     }
 
     pub fn build(self) -> DatetimeField {
-        DatetimeField {
-            name: self.name,
-        }
+        DatetimeField { name: self.name }
     }
 }
 
@@ -53,14 +51,9 @@ mod tests {
 
     #[test]
     fn test_serialize() {
-        let field = DatetimeFieldBuilder::new()
-            .name("modified")
-            .build();
+        let field = DatetimeFieldBuilder::new().name("modified").build();
         let field_json = serde_json::to_string(&field).unwrap();
-        assert_eq!(
-            field_json,
-            r#"{"type":"datetime","name":"modified"}"#
-        )
+        assert_eq!(field_json, r#"{"type":"datetime","name":"modified"}"#)
     }
 
     #[test]

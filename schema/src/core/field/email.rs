@@ -39,9 +39,7 @@ impl EmailFieldBuilder {
     }
 
     pub fn build(self) -> EmailField {
-        EmailField {
-            name: self.name,
-        }
+        EmailField { name: self.name }
     }
 }
 
@@ -53,14 +51,9 @@ mod tests {
 
     #[test]
     fn test_serialize() {
-        let field = EmailFieldBuilder::new()
-            .name("email")
-            .build();
+        let field = EmailFieldBuilder::new().name("email").build();
         let field_json = serde_json::to_string(&field).unwrap();
-        assert_eq!(
-            field_json,
-            r#"{"type":"email","name":"email"}"#
-        )
+        assert_eq!(field_json, r#"{"type":"email","name":"email"}"#)
     }
 
     #[test]
