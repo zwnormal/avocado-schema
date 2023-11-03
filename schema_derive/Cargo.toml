@@ -1,6 +1,6 @@
 [package]
 name = "avocado-schema-derive"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 license = "MIT"
 description = "A derive macro to support runtime reflection of struct values"
@@ -15,7 +15,7 @@ proc-macro = true
 [dependencies]
 syn = { version = "2.0.38", features = ["extra-traits"] }
 quote = "1.0"
-avocado-schema = "0.7.0"
+avocado-schema = "0.8.0"
 proc-macro2 = "1.0.69"
 
 [[test]]

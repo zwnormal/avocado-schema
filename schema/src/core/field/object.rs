@@ -4,13 +4,13 @@ use crate::core::constraint::Constraint;
 use crate::core::field::FieldEnum;
 use crate::core::field::{Field, FieldType};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "object")]
 pub struct ObjectField {
     pub name: String,
-    pub properties: HashMap<String, Box<FieldEnum>>,
+    pub properties: BTreeMap<String, Box<FieldEnum>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub required: Option<Vec<String>>,
 }
@@ -38,7 +38,7 @@ impl Field for ObjectField {
 #[derive(Default)]
 pub struct ObjectFieldBuilder {
     name: String,
-    properties: HashMap<String, Box<FieldEnum>>,
+    properties: BTreeMap<String, Box<FieldEnum>>,
     required: Option<Vec<String>>,
 }
 

@@ -3,7 +3,7 @@ use crate::core::field::object::ObjectField;
 use crate::core::field::Field;
 use crate::core::field::FieldEnum;
 use crate::core::value::{FieldValue, Reflect};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 
@@ -23,7 +23,7 @@ impl Error for ValidationError {}
 struct State {
     value: FieldValue,
     field_names: Vec<String>,
-    errors: HashMap<String, Vec<ValidationError>>,
+    errors: BTreeMap<String, Vec<ValidationError>>,
 }
 
 #[derive(Debug)]
@@ -112,7 +112,7 @@ impl Validator {
     pub fn validate(
         &self,
         value: &impl Reflect,
-    ) -> Result<(), HashMap<String, Vec<ValidationError>>> {
+    ) -> Result<(), BTreeMap<String, Vec<ValidationError>>> {
         let mut state = State {
             value: value.field_value(),
             field_names: vec![],

@@ -5,7 +5,7 @@ Avocado Schema defines the following enum `FieldValue` for runtime reflection of
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][mit-badge]][mit-url]
 
-[crates-badge]: https://img.shields.io/badge/crates-0.7.0-blue
+[crates-badge]: https://img.shields.io/badge/crates-0.8.0-blue
 [crates-url]: https://crates.io/crates/avocado-schema-derive
 [mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [mit-url]: https://github.com/zwnormal/avocado-schema/blob/main/LICENSE

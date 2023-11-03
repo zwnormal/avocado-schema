@@ -6,7 +6,7 @@ Inspired by the JSON schema, the main purpose of Avocado Schema is to avoid defi
 [![MIT licensed][mit-badge]][mit-url]
 [![codecov][codecov-badge]][codecov-url]
 
-[crates-badge]: https://img.shields.io/badge/crates-0.7.0-blue
+[crates-badge]: https://img.shields.io/badge/crates-0.8.0-blue
 [crates-url]: https://crates.io/crates/avocado-schema
 [mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [mit-url]: https://github.com/zwnormal/avocado-schema/blob/main/LICENSE
@@ -80,7 +80,7 @@ assert!(result
 }
 ```
 
-If any error occurs, the error will be returned in the format of `HashMap<String, Vec<ValidationError>>`. The key of the `HashMap` is path to the field where has validation error, and the `ValidationError` just contains the message of the error.
+If any error occurs, the error will be returned in the format of `BTreeMap<String, Vec<ValidationError>>`. The key is path to the field where has validation error, and the `ValidationError` just contains the message of the error.
 
 Besides creating the schema based on json, the `builder` pattern is also implemented to build the schema by code.
 
