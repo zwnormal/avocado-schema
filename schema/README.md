@@ -6,7 +6,7 @@ Inspired by the JSON schema, the main purpose of Avocado Schema is to avoid defi
 [![MIT licensed][mit-badge]][mit-url]
 [![codecov][codecov-badge]][codecov-url]
 
-[crates-badge]: https://img.shields.io/badge/crates-0.6.3-blue
+[crates-badge]: https://img.shields.io/badge/crates-0.7.0-blue
 [crates-url]: https://crates.io/crates/avocado-schema
 [mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [mit-url]: https://github.com/zwnormal/avocado-schema/blob/main/LICENSE
@@ -30,26 +30,22 @@ let schema_json = r#"
 {
     "type":"object",
     "name": "client",
-    "title": "Client",
     "properties": {
         "first_name": {
             "type": "string",
             "name": "first_name",
-            "title": "First Name",
             "max_length": 32,
             "min_length": 8
         },
         "last_name": {
             "type": "string",
             "name": "last_name",
-            "title": "Last Name",
             "max_length": 32,
             "min_length": 8
         },
         "age": {
             "type": "uinteger",
             "name": "age",
-            "title": "Age",
             "maximum": 200,
             "minimum": 0
         }

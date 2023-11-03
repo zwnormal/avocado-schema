@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 #[serde(tag = "type", rename = "email")]
 pub struct EmailField {
     pub name: String,
-    pub title: String,
 }
 
 impl Field for EmailField {
@@ -15,10 +14,6 @@ impl Field for EmailField {
 
     fn name(&self) -> String {
         self.name.clone()
-    }
-
-    fn title(&self) -> String {
-        self.title.clone()
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
@@ -31,7 +26,6 @@ impl Field for EmailField {
 #[derive(Default)]
 pub struct EmailFieldBuilder {
     name: String,
-    title: String,
 }
 
 impl EmailFieldBuilder {
@@ -44,15 +38,9 @@ impl EmailFieldBuilder {
         self
     }
 
-    pub fn title(mut self, title: &'static str) -> Self {
-        self.title = title.to_string();
-        self
-    }
-
     pub fn build(self) -> EmailField {
         EmailField {
             name: self.name,
-            title: self.title,
         }
     }
 }
@@ -67,12 +55,11 @@ mod tests {
     fn test_serialize() {
         let field = EmailFieldBuilder::new()
             .name("email")
-            .title("Email")
             .build();
         let field_json = serde_json::to_string(&field).unwrap();
         assert_eq!(
             field_json,
-            r#"{"type":"email","name":"email","title":"Email"}"#
+            r#"{"type":"email","name":"email"}"#
         )
     }
 
@@ -81,12 +68,10 @@ mod tests {
         let field_json = r#"
         {
             "type":"email",
-            "name": "email",
-            "title": "Email"
+            "name": "email"
         }"#;
         let field: EmailField = serde_json::from_str(field_json).unwrap();
         assert_eq!(field.name, "email");
-        assert_eq!(field.title, "Email");
     }
 
     #[test]

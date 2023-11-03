@@ -12,7 +12,6 @@ use serde::{Deserialize, Serialize};
 #[serde(tag = "type", rename = "float")]
 pub struct FloatField {
     pub name: String,
-    pub title: String,
     #[serde(rename = "enum", skip_serializing_if = "Option::is_none")]
     pub enumeration: Option<Vec<f64>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -30,10 +29,6 @@ impl Field for FloatField {
 
     fn name(&self) -> String {
         self.name.clone()
-    }
-
-    fn title(&self) -> String {
-        self.title.clone()
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
@@ -62,7 +57,6 @@ impl Field for FloatField {
 #[derive(Default)]
 pub struct FloatFieldBuilder {
     name: String,
-    title: String,
     enumeration: Option<Vec<f64>>,
     maximum: Option<f64>,
     exclusive_maximum: Option<f64>,
@@ -77,11 +71,6 @@ impl FloatFieldBuilder {
 
     pub fn name(mut self, name: &'static str) -> Self {
         self.name = name.to_string();
-        self
-    }
-
-    pub fn title(mut self, title: &'static str) -> Self {
-        self.title = title.to_string();
         self
     }
 
@@ -113,7 +102,6 @@ impl FloatFieldBuilder {
     pub fn build(self) -> FloatField {
         FloatField {
             name: self.name,
-            title: self.title,
             enumeration: self.enumeration,
             maximum: self.maximum,
             exclusive_maximum: self.exclusive_maximum,
@@ -132,7 +120,6 @@ mod tests {
     fn test_serialize() {
         let field = FloatFieldBuilder::new()
             .name("price")
-            .title("Price")
             .enumeration(vec![10.0, 20.0])
             .maximum(20.0)
             .exclusive_maximum(20.1)
@@ -142,7 +129,7 @@ mod tests {
         let field_json = serde_json::to_string(&field).unwrap();
         assert_eq!(
             field_json,
-            r#"{"type":"float","name":"price","title":"Price","enum":[10.0,20.0],"maximum":20.0,"exclusiveMaximum":20.1,"minimum":10.0,"exclusiveMinimum":9.9}"#
+            r#"{"type":"float","name":"price","enum":[10.0,20.0],"maximum":20.0,"exclusiveMaximum":20.1,"minimum":10.0,"exclusiveMinimum":9.9}"#
         );
     }
 
@@ -152,7 +139,6 @@ mod tests {
         {
             "type":"float",
             "name": "price",
-            "title": "Price",
             "enum": [10.0, 20.0],
             "maximum": 20.0,
             "exclusiveMaximum": 20.1,
@@ -161,7 +147,6 @@ mod tests {
         }"#;
         let field: FloatField = serde_json::from_str(field_json).unwrap();
         assert_eq!(field.name, "price");
-        assert_eq!(field.title, "Price");
         assert_eq!(field.enumeration.unwrap(), vec![10.0, 20.0]);
         assert_eq!(field.maximum.unwrap(), 20.0);
         assert_eq!(field.exclusive_maximum.unwrap(), 20.1);

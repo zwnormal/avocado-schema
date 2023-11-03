@@ -10,7 +10,6 @@ use std::collections::HashMap;
 #[serde(tag = "type", rename = "object")]
 pub struct ObjectField {
     pub name: String,
-    pub title: String,
     pub properties: HashMap<String, Box<FieldEnum>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub required: Option<Vec<String>>,
@@ -21,10 +20,6 @@ impl Field for ObjectField {
 
     fn name(&self) -> String {
         self.name.clone()
-    }
-
-    fn title(&self) -> String {
-        self.title.clone()
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
@@ -43,7 +38,6 @@ impl Field for ObjectField {
 #[derive(Default)]
 pub struct ObjectFieldBuilder {
     name: String,
-    title: String,
     properties: HashMap<String, Box<FieldEnum>>,
     required: Option<Vec<String>>,
 }
@@ -55,11 +49,6 @@ impl ObjectFieldBuilder {
 
     pub fn name(mut self, name: &'static str) -> Self {
         self.name = name.to_string();
-        self
-    }
-
-    pub fn title(mut self, title: &'static str) -> Self {
-        self.title = title.to_string();
         self
     }
 
@@ -77,7 +66,6 @@ impl ObjectFieldBuilder {
     pub fn build(self) -> ObjectField {
         ObjectField {
             name: self.name,
-            title: self.title,
             properties: self.properties,
             required: self.required,
         }
@@ -100,12 +88,10 @@ mod tests {
     fn test_serialize() {
         let field = ObjectFieldBuilder::new()
             .name("client")
-            .title("Client")
             .property(
                 "first_name",
                 StringFieldBuilder::new()
                     .name("first_name")
-                    .title("First Name")
                     .max_length(32)
                     .min_length(8)
                     .build(),
@@ -114,7 +100,6 @@ mod tests {
                 "last_name",
                 StringFieldBuilder::new()
                     .name("last_name")
-                    .title("Last Name")
                     .max_length(32)
                     .min_length(8)
                     .build(),
@@ -123,7 +108,6 @@ mod tests {
                 "age",
                 IntegerFieldBuilder::new()
                     .name("age")
-                    .title("Age")
                     .maximum(150)
                     .minimum(1)
                     .build(),
@@ -132,21 +116,18 @@ mod tests {
                 "stars",
                 FloatFieldBuilder::new()
                     .name("stars")
-                    .title("Stars")
                     .build(),
             )
             .property(
                 "married",
                 BooleanFieldBuilder::new()
                     .name("married")
-                    .title("Married")
                     .build(),
             )
             .property(
                 "categories",
                 ArrayFieldBuilder::new()
                     .name("categories")
-                    .title("Categories")
                     .build(),
             )
             .build();
@@ -159,19 +140,16 @@ mod tests {
         {
             "type": "object",
             "name": "client",
-            "title": "Client",
             "properties": {
                 "first_name": {
                     "type": "string",
                     "name": "first_name",
-                    "title": "First Name",
                     "maxLength": 32,
                     "minLength": 8
                 },
                 "last_name": {
                     "type": "string",
                     "name": "last_name",
-                    "title": "Last Name",
                     "maxLength": 32,
                     "minLength": 8,
                     "pattern": "[a-zA-Z]+"
@@ -184,19 +162,16 @@ mod tests {
         {
             "type": "object",
             "name": "client",
-            "title": "Client",
             "properties": {
                 "first_name": {
                     "type": "string",
                     "name": "first_name",
-                    "title": "First Name",
                     "maxLength": 32,
                     "minLength": -1,
                 },
                 "last_name": {
                     "type": "string",
                     "name": "last_name",
-                    "title": "Last Name",
                     "maxLength": 32,
                     "minLength": 8
                 }
@@ -235,12 +210,10 @@ mod tests {
     fn test_required() {
         let field = ObjectFieldBuilder::new()
             .name("client")
-            .title("Client")
             .property(
                 "name",
                 StringFieldBuilder::new()
                     .name("name")
-                    .title("Name")
                     .max_length(64)
                     .min_length(1)
                     .build(),

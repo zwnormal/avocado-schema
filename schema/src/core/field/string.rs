@@ -12,7 +12,6 @@ use serde::{Deserialize, Serialize};
 #[serde(tag = "type", rename = "string")]
 pub struct StringField {
     pub name: String,
-    pub title: String,
     #[serde(rename = "enum", skip_serializing_if = "Option::is_none")]
     pub enumeration: Option<Vec<String>>,
     #[serde(rename = "maxLength", skip_serializing_if = "Option::is_none")]
@@ -28,10 +27,6 @@ impl Field for StringField {
 
     fn name(&self) -> String {
         self.name.clone()
-    }
-
-    fn title(&self) -> String {
-        self.title.clone()
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
@@ -57,7 +52,6 @@ impl Field for StringField {
 #[derive(Default)]
 pub struct StringFieldBuilder {
     name: String,
-    title: String,
     enumeration: Option<Vec<String>>,
     max_length: Option<usize>,
     min_length: Option<usize>,
@@ -71,11 +65,6 @@ impl StringFieldBuilder {
 
     pub fn name(mut self, name: &'static str) -> Self {
         self.name = name.to_string();
-        self
-    }
-
-    pub fn title(mut self, title: &'static str) -> Self {
-        self.title = title.to_string();
         self
     }
 
@@ -102,7 +91,6 @@ impl StringFieldBuilder {
     pub fn build(self) -> StringField {
         StringField {
             name: self.name,
-            title: self.title,
             enumeration: self.enumeration,
             max_length: self.max_length,
             min_length: self.min_length,
@@ -121,7 +109,6 @@ mod tests {
     fn test_serialize() {
         let field = StringFieldBuilder::new()
             .name("subtype")
-            .title("SubType")
             .enumeration(vec!["meeting".to_string(), "email".to_string()])
             .max_length(32)
             .min_length(8)
@@ -130,7 +117,7 @@ mod tests {
         let field_json = serde_json::to_string(&field).unwrap();
         assert_eq!(
             field_json,
-            r#"{"type":"string","name":"subtype","title":"SubType","enum":["meeting","email"],"maxLength":32,"minLength":8,"pattern":"[a-z]+"}"#
+            r#"{"type":"string","name":"subtype","enum":["meeting","email"],"maxLength":32,"minLength":8,"pattern":"[a-z]+"}"#
         );
     }
 
@@ -140,7 +127,6 @@ mod tests {
         {
             "type":"string",
             "name": "subtype",
-            "title": "SubType",
             "enum": ["meeting", "email"],
             "maxLength": 32,
             "minLength": 8,
@@ -148,7 +134,6 @@ mod tests {
         }"#;
         let field: StringField = serde_json::from_str(field_json).unwrap();
         assert_eq!(field.name, "subtype");
-        assert_eq!(field.title, "SubType");
         assert_eq!(field.enumeration.unwrap(), vec!["meeting", "email"]);
         assert_eq!(field.max_length.unwrap(), 32);
         assert_eq!(field.min_length.unwrap(), 8);

@@ -51,7 +51,6 @@ pub trait Field: Debug + Into<FieldEnum> {
     const FIELD_TYPE: FieldType;
 
     fn name(&self) -> String;
-    fn title(&self) -> String;
     fn constrains(&self) -> Vec<Box<dyn Constraint>>;
 }
 

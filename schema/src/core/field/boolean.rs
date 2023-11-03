@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 #[serde(tag = "type", rename = "boolean")]
 pub struct BooleanField {
     pub name: String,
-    pub title: String,
 }
 
 impl Field for BooleanField {
@@ -15,10 +14,6 @@ impl Field for BooleanField {
 
     fn name(&self) -> String {
         self.name.clone()
-    }
-
-    fn title(&self) -> String {
-        self.title.clone()
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
@@ -31,7 +26,6 @@ impl Field for BooleanField {
 #[derive(Default)]
 pub struct BooleanFieldBuilder {
     name: String,
-    title: String,
 }
 
 impl BooleanFieldBuilder {
@@ -44,15 +38,9 @@ impl BooleanFieldBuilder {
         self
     }
 
-    pub fn title(mut self, title: &'static str) -> Self {
-        self.title = title.to_string();
-        self
-    }
-
     pub fn build(self) -> BooleanField {
         BooleanField {
             name: self.name,
-            title: self.title,
         }
     }
 }
@@ -66,12 +54,11 @@ mod tests {
     fn test_serialize() {
         let field = BooleanFieldBuilder::new()
             .name("married")
-            .title("Married")
             .build();
         let field_json = serde_json::to_string(&field).unwrap();
         assert_eq!(
             field_json,
-            r#"{"type":"boolean","name":"married","title":"Married"}"#
+            r#"{"type":"boolean","name":"married"}"#
         )
     }
 
@@ -80,12 +67,10 @@ mod tests {
         let field_json = r#"
         {
             "type":"boolean",
-            "name": "married",
-            "title": "Married"
+            "name": "married"
         }"#;
         let field: BooleanField = serde_json::from_str(field_json).unwrap();
         assert_eq!(field.name, "married");
-        assert_eq!(field.title, "Married");
     }
 
     #[test]

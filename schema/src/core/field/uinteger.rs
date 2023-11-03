@@ -12,7 +12,6 @@ use serde::{Deserialize, Serialize};
 #[serde(tag = "type", rename = "uinteger")]
 pub struct UIntegerField {
     pub name: String,
-    pub title: String,
     #[serde(rename = "enum", skip_serializing_if = "Option::is_none")]
     pub enumeration: Option<Vec<u64>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -30,10 +29,6 @@ impl Field for UIntegerField {
 
     fn name(&self) -> String {
         self.name.clone()
-    }
-
-    fn title(&self) -> String {
-        self.title.clone()
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
@@ -62,7 +57,6 @@ impl Field for UIntegerField {
 #[derive(Default)]
 pub struct UIntegerFieldBuilder {
     name: String,
-    title: String,
     enumeration: Option<Vec<u64>>,
     maximum: Option<u64>,
     exclusive_maximum: Option<u64>,
@@ -77,11 +71,6 @@ impl UIntegerFieldBuilder {
 
     pub fn name(mut self, name: &'static str) -> Self {
         self.name = name.to_string();
-        self
-    }
-
-    pub fn title(mut self, title: &'static str) -> Self {
-        self.title = title.to_string();
         self
     }
 
@@ -113,7 +102,6 @@ impl UIntegerFieldBuilder {
     pub fn build(self) -> UIntegerField {
         UIntegerField {
             name: self.name,
-            title: self.title,
             enumeration: self.enumeration,
             maximum: self.maximum,
             exclusive_maximum: self.exclusive_maximum,
@@ -132,7 +120,6 @@ mod tests {
     fn test_serialize() {
         let field = UIntegerFieldBuilder::new()
             .name("age")
-            .title("Age")
             .enumeration(vec![50, 100])
             .maximum(100)
             .exclusive_maximum(101)
@@ -142,7 +129,7 @@ mod tests {
         let field_json = serde_json::to_string(&field).unwrap();
         assert_eq!(
             field_json,
-            r#"{"type":"uinteger","name":"age","title":"Age","enum":[50,100],"maximum":100,"exclusiveMaximum":101,"minimum":1,"exclusiveMinimum":0}"#
+            r#"{"type":"uinteger","name":"age","enum":[50,100],"maximum":100,"exclusiveMaximum":101,"minimum":1,"exclusiveMinimum":0}"#
         );
     }
 
@@ -152,7 +139,6 @@ mod tests {
         {
             "type":"uinteger",
             "name": "age",
-            "title": "Age",
             "enum": [50, 100],
             "maximum": 100,
             "exclusiveMaximum": 101,
@@ -161,7 +147,6 @@ mod tests {
         }"#;
         let field: UIntegerField = serde_json::from_str(field_json).unwrap();
         assert_eq!(field.name, "age");
-        assert_eq!(field.title, "Age");
         assert_eq!(field.enumeration.unwrap(), vec![50, 100]);
         assert_eq!(field.maximum.unwrap(), 100);
         assert_eq!(field.exclusive_maximum.unwrap(), 101);

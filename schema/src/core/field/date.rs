@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 #[serde(tag = "type", rename = "date")]
 pub struct DateField {
     pub name: String,
-    pub title: String,
 }
 
 impl Field for DateField {
@@ -15,10 +14,6 @@ impl Field for DateField {
 
     fn name(&self) -> String {
         self.name.clone()
-    }
-
-    fn title(&self) -> String {
-        self.title.clone()
     }
 
     fn constrains(&self) -> Vec<Box<dyn Constraint>> {
@@ -31,7 +26,6 @@ impl Field for DateField {
 #[derive(Default)]
 pub struct DateFieldBuilder {
     name: String,
-    title: String,
 }
 
 impl DateFieldBuilder {
@@ -44,15 +38,9 @@ impl DateFieldBuilder {
         self
     }
 
-    pub fn title(mut self, title: &'static str) -> Self {
-        self.title = title.to_string();
-        self
-    }
-
     pub fn build(self) -> DateField {
         DateField {
             name: self.name,
-            title: self.title,
         }
     }
 }
@@ -67,12 +55,11 @@ mod tests {
     fn test_serialize() {
         let field = DateFieldBuilder::new()
             .name("modified")
-            .title("Modified")
             .build();
         let field_json = serde_json::to_string(&field).unwrap();
         assert_eq!(
             field_json,
-            r#"{"type":"date","name":"modified","title":"Modified"}"#
+            r#"{"type":"date","name":"modified"}"#
         )
     }
 
@@ -81,12 +68,10 @@ mod tests {
         let field_json = r#"
         {
             "type":"date",
-            "name": "modified",
-            "title": "Modified"
+            "name": "modified"
         }"#;
         let field: DateField = serde_json::from_str(field_json).unwrap();
         assert_eq!(field.name, "modified");
-        assert_eq!(field.title, "Modified");
     }
     #[test]
     fn test_type() {

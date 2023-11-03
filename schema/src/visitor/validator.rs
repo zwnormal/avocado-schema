@@ -157,26 +157,22 @@ mod tests {
         {
             "type":"object",
             "name": "client",
-            "title": "Client",
             "properties": {
                 "first_name": {
                     "type": "string",
                     "name": "first_name",
-                    "title": "First Name",
                     "max_length": 32,
                     "min_length": 8
                 },
                 "last_name": {
                     "type": "string",
                     "name": "last_name",
-                    "title": "Last Name",
                     "max_length": 32,
                     "min_length": 8
                 },
                 "age": {
                     "type": "uinteger",
                     "name": "age",
-                    "title": "Age",
                     "maximum": 200,
                     "minimum": 0
                 }
